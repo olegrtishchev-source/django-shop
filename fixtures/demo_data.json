@@ -1,0 +1,810 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$bnk1AvQNWjS8o4O2Q9VO9a$g2Fkur4eecBjKqPcFyssM6pMXSqtb0VuV/W5Fh6JnKE=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "Админ",
+    "last_name": "Админов",
+    "email": "admin@megano.local",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-09-07T14:29:52.699Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$NObsIQkHdVfe8skHnWcp1m$nxnuk18xga7XCffTM4ZKIhtItidHzZ52Xc8/PJ2qwIA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ivanov",
+    "first_name": "Иван",
+    "last_name": "Иванов",
+    "email": "ivanov@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-07T14:29:52.963Z",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$gxs1bpez6VxSX3eMYmTxlc$q4ZR7zRlSQpJNZ8F+oP6mvQqEZ1X7d2Sla9EJVn5c7c=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "petrova",
+    "first_name": "Мария",
+    "last_name": "Петрова",
+    "email": "petrova@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-07T14:29:53.222Z",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 1,
+  "fields": {
+    "name": "Администратор",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 2,
+  "fields": {
+    "name": "Покупатель",
+    "permissions": []
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "full_name": "Админ Админов",
+    "phone": "+7 900 000-00-00",
+    "avatar": ""
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "full_name": "Иван Иванов",
+    "phone": "+7 900 000-00-00",
+    "avatar": ""
+  }
+},
+{
+  "model": "accounts.profile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "full_name": "Мария Петрова",
+    "phone": "+7 900 000-00-00",
+    "avatar": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 1,
+  "fields": {
+    "title": "Компьютеры и ноутбуки",
+    "parent": null,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 2,
+  "fields": {
+    "title": "Ноутбуки",
+    "parent": 1,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 3,
+  "fields": {
+    "title": "Комплектующие",
+    "parent": 1,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 4,
+  "fields": {
+    "title": "Смартфоны и гаджеты",
+    "parent": null,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 5,
+  "fields": {
+    "title": "Смартфоны",
+    "parent": 4,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 6,
+  "fields": {
+    "title": "Наушники",
+    "parent": 4,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 7,
+  "fields": {
+    "title": "Бытовая техника",
+    "parent": null,
+    "image": "",
+    "image_alt": ""
+  }
+},
+{
+  "model": "catalog.tag",
+  "pk": 1,
+  "fields": {
+    "name": "Игровой"
+  }
+},
+{
+  "model": "catalog.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Новинка"
+  }
+},
+{
+  "model": "catalog.tag",
+  "pk": 3,
+  "fields": {
+    "name": "Хит продаж"
+  }
+},
+{
+  "model": "catalog.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Для дома"
+  }
+},
+{
+  "model": "catalog.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Премиум"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 1,
+  "fields": {
+    "category": 2,
+    "title": "Ноутбук ProBook 15",
+    "price": "54990.00",
+    "count": 8,
+    "date": "2026-09-07T14:29:53.504Z",
+    "description": "Ноутбук для работы и учёбы.",
+    "full_description": "Ноутбук для работы и учёбы. Подробное описание уточняется у продавца.",
+    "free_delivery": true,
+    "rating": "4.50",
+    "is_limited": false,
+    "is_banner": true,
+    "is_deleted": false,
+    "tags": [
+      2
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 2,
+  "fields": {
+    "category": 2,
+    "title": "Игровой ноутбук StrikeForce 17",
+    "price": "112990.00",
+    "count": 3,
+    "date": "2026-09-07T14:29:53.512Z",
+    "description": "Мощный игровой ноутбук с дискретной видеокартой.",
+    "full_description": "Мощный игровой ноутбук с дискретной видеокартой. Подробное описание уточняется у продавца.",
+    "free_delivery": true,
+    "rating": "0.00",
+    "is_limited": true,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      1,
+      5
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 3,
+  "fields": {
+    "category": 3,
+    "title": "Видеокарта GeForce RTX 4070",
+    "price": "68990.00",
+    "count": 5,
+    "date": "2026-09-07T14:29:53.518Z",
+    "description": "Видеокарта для игр и работы с графикой.",
+    "full_description": "Видеокарта для игр и работы с графикой. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 4,
+  "fields": {
+    "category": 3,
+    "title": "SSD-накопитель 1TB NVMe",
+    "price": "7990.00",
+    "count": 25,
+    "date": "2026-09-07T14:29:53.525Z",
+    "description": "Быстрый твердотельный накопитель.",
+    "full_description": "Быстрый твердотельный накопитель. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      3
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 5,
+  "fields": {
+    "category": 5,
+    "title": "Смартфон Vega X12",
+    "price": "39990.00",
+    "count": 15,
+    "date": "2026-09-07T14:29:53.531Z",
+    "description": "Смартфон с тройной камерой и быстрой зарядкой.",
+    "full_description": "Смартфон с тройной камерой и быстрой зарядкой. Подробное описание уточняется у продавца.",
+    "free_delivery": true,
+    "rating": "5.00",
+    "is_limited": false,
+    "is_banner": true,
+    "is_deleted": false,
+    "tags": [
+      2
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 6,
+  "fields": {
+    "category": 5,
+    "title": "Смартфон Vega Lite",
+    "price": "19990.00",
+    "count": 20,
+    "date": "2026-09-07T14:29:53.537Z",
+    "description": "Бюджетный смартфон с хорошей автономностью.",
+    "full_description": "Бюджетный смартфон с хорошей автономностью. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      3
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 7,
+  "fields": {
+    "category": 6,
+    "title": "Беспроводные наушники SoundPods",
+    "price": "6990.00",
+    "count": 40,
+    "date": "2026-09-07T14:29:53.543Z",
+    "description": "Полностью беспроводные наушники с шумоподавлением.",
+    "full_description": "Полностью беспроводные наушники с шумоподавлением. Подробное описание уточняется у продавца.",
+    "free_delivery": true,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": true,
+    "is_deleted": false,
+    "tags": [
+      3
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 8,
+  "fields": {
+    "category": 6,
+    "title": "Наушники StudioMax (лимитированная серия)",
+    "price": "24990.00",
+    "count": 4,
+    "date": "2026-09-07T14:29:53.549Z",
+    "description": "Полноразмерные наушники, лимитированная серия.",
+    "full_description": "Полноразмерные наушники, лимитированная серия. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": true,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      5
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 9,
+  "fields": {
+    "category": 7,
+    "title": "Робот-пылесос CleanBot 5",
+    "price": "23990.00",
+    "count": 6,
+    "date": "2026-09-07T14:29:53.555Z",
+    "description": "Робот-пылесос с влажной уборкой.",
+    "full_description": "Робот-пылесос с влажной уборкой. Подробное описание уточняется у продавца.",
+    "free_delivery": true,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      4
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 10,
+  "fields": {
+    "category": 7,
+    "title": "Мультиварка ChefHome 6L",
+    "price": "8990.00",
+    "count": 12,
+    "date": "2026-09-07T14:29:53.560Z",
+    "description": "Мультиварка на 6 литров, 15 программ.",
+    "full_description": "Мультиварка на 6 литров, 15 программ. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      4
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 11,
+  "fields": {
+    "category": 7,
+    "title": "Кофемашина EspressoPro",
+    "price": "34990.00",
+    "count": 3,
+    "date": "2026-09-07T14:29:53.566Z",
+    "description": "Автоматическая кофемашина для дома и офиса.",
+    "full_description": "Автоматическая кофемашина для дома и офиса. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": true,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      5
+    ]
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 12,
+  "fields": {
+    "category": 3,
+    "title": "Материнская плата TechBoard Z790",
+    "price": "24990.00",
+    "count": 7,
+    "date": "2026-09-07T14:29:53.572Z",
+    "description": "Материнская плата для современных процессоров.",
+    "full_description": "Материнская плата для современных процессоров. Подробное описание уточняется у продавца.",
+    "free_delivery": false,
+    "rating": "0.00",
+    "is_limited": false,
+    "is_banner": false,
+    "is_deleted": false,
+    "tags": [
+      1
+    ]
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 3,
+  "fields": {
+    "product": 2,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 4,
+  "fields": {
+    "product": 2,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 5,
+  "fields": {
+    "product": 3,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 6,
+  "fields": {
+    "product": 3,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 7,
+  "fields": {
+    "product": 4,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 8,
+  "fields": {
+    "product": 4,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 9,
+  "fields": {
+    "product": 5,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 10,
+  "fields": {
+    "product": 5,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 11,
+  "fields": {
+    "product": 6,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 12,
+  "fields": {
+    "product": 6,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 13,
+  "fields": {
+    "product": 7,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 14,
+  "fields": {
+    "product": 7,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 15,
+  "fields": {
+    "product": 8,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 16,
+  "fields": {
+    "product": 8,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 17,
+  "fields": {
+    "product": 9,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 18,
+  "fields": {
+    "product": 9,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 19,
+  "fields": {
+    "product": 10,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 20,
+  "fields": {
+    "product": 10,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 21,
+  "fields": {
+    "product": 11,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 22,
+  "fields": {
+    "product": 11,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 23,
+  "fields": {
+    "product": 12,
+    "name": "Гарантия",
+    "value": "12 месяцев"
+  }
+},
+{
+  "model": "catalog.specification",
+  "pk": 24,
+  "fields": {
+    "product": 12,
+    "name": "Страна производства",
+    "value": "Китай"
+  }
+},
+{
+  "model": "catalog.review",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "user": 2,
+    "author": "Иван Иванов",
+    "email": "ivanov@example.com",
+    "text": "Отличный ноутбук, всё устраивает.",
+    "rate": 5,
+    "date": "2026-09-07T14:29:53.583Z"
+  }
+},
+{
+  "model": "catalog.review",
+  "pk": 2,
+  "fields": {
+    "product": 1,
+    "user": 3,
+    "author": "Мария Петрова",
+    "email": "petrova@example.com",
+    "text": "Хорошее соотношение цены и качества.",
+    "rate": 4,
+    "date": "2026-09-07T14:29:53.586Z"
+  }
+},
+{
+  "model": "catalog.review",
+  "pk": 3,
+  "fields": {
+    "product": 5,
+    "user": 2,
+    "author": "Иван Иванов",
+    "email": "ivanov@example.com",
+    "text": "Камера снимает хорошо, батарея держит день.",
+    "rate": 5,
+    "date": "2026-09-07T14:29:53.588Z"
+  }
+},
+{
+  "model": "catalog.sale",
+  "pk": 1,
+  "fields": {
+    "product": 2,
+    "sale_price": "96041.50",
+    "date_from": "2026-09-04",
+    "date_to": "2026-09-17"
+  }
+},
+{
+  "model": "catalog.sale",
+  "pk": 2,
+  "fields": {
+    "product": 7,
+    "sale_price": "5941.50",
+    "date_from": "2026-09-04",
+    "date_to": "2026-09-17"
+  }
+},
+{
+  "model": "catalog.sale",
+  "pk": 3,
+  "fields": {
+    "product": 11,
+    "sale_price": "29741.50",
+    "date_from": "2026-09-04",
+    "date_to": "2026-09-17"
+  }
+},
+{
+  "model": "catalog.shopsettings",
+  "pk": 1,
+  "fields": {
+    "standard_delivery_cost": "200.00",
+    "free_delivery_threshold": "2000.00",
+    "express_delivery_cost": "500.00"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "created_at": "2026-09-07T14:29:53.592Z",
+    "full_name": "Иван Иванов",
+    "email": "ivanov@example.com",
+    "phone": "+7 900 111-22-33",
+    "delivery_type": "standard",
+    "payment_type": "online",
+    "total_cost": "62980.00",
+    "status": "paid",
+    "city": "Москва",
+    "address": "ул. Примерная, д. 1"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 1,
+    "title": "Ноутбук ProBook 15",
+    "price": "54990.00",
+    "quantity": 1
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 2,
+  "fields": {
+    "order": 1,
+    "product": 4,
+    "title": "SSD-накопитель 1TB NVMe",
+    "price": "7990.00",
+    "quantity": 1
+  }
+},
+{
+  "model": "orders.payment",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "card_last4": "4242",
+    "status": "success",
+    "error_message": "",
+    "processed_at": "2026-09-07T14:29:53.595Z"
+  }
+}
+]
