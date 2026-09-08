@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'frontend',
     'catalog',
     'orders',
@@ -38,6 +39,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'megano.middleware.EnsureCsrfCookieMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -92,5 +94,18 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 FIXTURE_DIRS = [BASE_DIR / 'fixtures']
+
+REST_FRAMEWORK = {
+    # Аутентификация по сессии — фронтенд уже шлёт куки сессии и X-CSRFToken,
+    # отдельный токен/JWT не нужен, вход/выход через /api/sign-in, /api/sign-out.
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    # По умолчанию — доступ без входа, конкретные view защищаются явно
+    # IsAuthenticated (например, профиль и заказы требуют входа, а каталог — нет).
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
