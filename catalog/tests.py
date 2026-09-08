@@ -1,7 +1,7 @@
 import datetime
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from catalog.models import Category, Product, Sale, Tag
 
@@ -194,3 +194,21 @@ class SalesViewTests(TestCase):
         self.assertEqual(item['salePrice'], '800.00')
         self.assertEqual(item['dateFrom'], '09-05')
         self.assertEqual(item['dateTo'], '09-18')
+
+
+class StaticFilesServingTests(TestCase):
+    """Регрессия на замечание куратора по MR: раздача /static/ и /media/ не
+    должна зависеть от DJANGO_DEBUG — тот, кто проверяет проект, запускает
+    его только через `manage.py runserver`, без collectstatic и отдельного
+    веб-сервера под статику. Используется статика самой django.contrib.admin
+    (всегда есть в INSTALLED_APPS), чтобы тест не зависел от установки
+    внешнего пакета frontend."""
+
+    @override_settings(DEBUG=False)
+    def test_static_served_even_with_debug_false(self):
+        response = self.client.get('/static/admin/css/base.css')
+        self.assertEqual(response.status_code, 200)
+
+    def test_static_served_with_debug_true(self):
+        response = self.client.get('/static/admin/css/base.css')
+        self.assertEqual(response.status_code, 200)
