@@ -16,7 +16,8 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from accounts.models import Profile
-from catalog.models import Category, Product, Review, Sale, ShopSettings, Specification, Tag
+from catalog.management.commands._demo_images import generate_product_image
+from catalog.models import Category, Product, ProductImage, Review, Sale, ShopSettings, Specification, Tag
 from orders.models import Order, OrderItem, Payment
 
 
@@ -51,15 +52,26 @@ class Command(BaseCommand):
         buyer1 = make_user('ivanov', '123456', 'Иван', 'Иванов', 'ivanov@example.com', 'Покупатель')
         buyer2 = make_user('petrova', '123456', 'Мария', 'Петрова', 'petrova@example.com', 'Покупатель')
 
-        computers = Category.objects.get_or_create(title='Компьютеры и ноутбуки')[0]
-        laptops = Category.objects.get_or_create(title='Ноутбуки', parent=computers)[0]
-        components = Category.objects.get_or_create(title='Комплектующие', parent=computers)[0]
+        def make_category(title, parent=None, icon=None):
+            category, _ = Category.objects.get_or_create(title=title, parent=parent)
+            # меню каталога на фронтенде безусловно обращается к
+            # category.image.src — без картинки страница падает точно так же,
+            # как раньше падала из-за images[0] у товаров
+            if icon and not category.image:
+                category.image.save(f'{icon}.png', generate_product_image(icon), save=False)
+                category.image_alt = title
+                category.save()
+            return category
 
-        gadgets = Category.objects.get_or_create(title='Смартфоны и гаджеты')[0]
-        smartphones = Category.objects.get_or_create(title='Смартфоны', parent=gadgets)[0]
-        headphones = Category.objects.get_or_create(title='Наушники', parent=gadgets)[0]
+        computers = make_category('Компьютеры и ноутбуки', icon='laptop')
+        laptops = make_category('Ноутбуки', parent=computers, icon='laptop')
+        components = make_category('Комплектующие', parent=computers, icon='motherboard')
 
-        home_appliances = Category.objects.get_or_create(title='Бытовая техника')[0]
+        gadgets = make_category('Смартфоны и гаджеты', icon='smartphone')
+        smartphones = make_category('Смартфоны', parent=gadgets, icon='smartphone')
+        headphones = make_category('Наушники', parent=gadgets, icon='headphones')
+
+        home_appliances = make_category('Бытовая техника', icon='multicooker')
 
         tag_names = ['Игровой', 'Новинка', 'Хит продаж', 'Для дома', 'Премиум']
         tags = {name: Tag.objects.get_or_create(name=name)[0] for name in tag_names}
@@ -67,35 +79,38 @@ class Command(BaseCommand):
         products_data = [
             dict(category=laptops, title='Ноутбук ProBook 15', price='54990.00', count=8,
                  description='Ноутбук для работы и учёбы.', free_delivery=True,
-                 tag_list=['Новинка'], is_banner=True),
+                 tag_list=['Новинка'], is_banner=True, icon='laptop'),
             dict(category=laptops, title='Игровой ноутбук StrikeForce 17', price='112990.00', count=3,
                  description='Мощный игровой ноутбук с дискретной видеокартой.', free_delivery=True,
-                 tag_list=['Игровой', 'Премиум'], is_limited=True),
+                 tag_list=['Игровой', 'Премиум'], is_limited=True, icon='laptop'),
             dict(category=components, title='Видеокарта GeForce RTX 4070', price='68990.00', count=5,
-                 description='Видеокарта для игр и работы с графикой.', tag_list=['Игровой']),
+                 description='Видеокарта для игр и работы с графикой.', tag_list=['Игровой'],
+                 icon='graphics_card'),
             dict(category=components, title='SSD-накопитель 1TB NVMe', price='7990.00', count=25,
-                 description='Быстрый твердотельный накопитель.', tag_list=['Хит продаж']),
+                 description='Быстрый твердотельный накопитель.', tag_list=['Хит продаж'], icon='ssd_stick'),
             dict(category=smartphones, title='Смартфон Vega X12', price='39990.00', count=15,
                  description='Смартфон с тройной камерой и быстрой зарядкой.', free_delivery=True,
-                 tag_list=['Новинка'], is_banner=True),
+                 tag_list=['Новинка'], is_banner=True, icon='smartphone'),
             dict(category=smartphones, title='Смартфон Vega Lite', price='19990.00', count=20,
-                 description='Бюджетный смартфон с хорошей автономностью.', tag_list=['Хит продаж']),
+                 description='Бюджетный смартфон с хорошей автономностью.', tag_list=['Хит продаж'],
+                 icon='smartphone'),
             dict(category=headphones, title='Беспроводные наушники SoundPods', price='6990.00', count=40,
                  description='Полностью беспроводные наушники с шумоподавлением.', free_delivery=True,
-                 tag_list=['Хит продаж'], is_banner=True),
+                 tag_list=['Хит продаж'], is_banner=True, icon='earbuds'),
             dict(category=headphones, title='Наушники StudioMax (лимитированная серия)', price='24990.00', count=4,
                  description='Полноразмерные наушники, лимитированная серия.',
-                 tag_list=['Премиум'], is_limited=True),
+                 tag_list=['Премиум'], is_limited=True, icon='headphones'),
             dict(category=home_appliances, title='Робот-пылесос CleanBot 5', price='23990.00', count=6,
                  description='Робот-пылесос с влажной уборкой.', free_delivery=True,
-                 tag_list=['Для дома']),
+                 tag_list=['Для дома'], icon='robot_vacuum'),
             dict(category=home_appliances, title='Мультиварка ChefHome 6L', price='8990.00', count=12,
-                 description='Мультиварка на 6 литров, 15 программ.', tag_list=['Для дома']),
+                 description='Мультиварка на 6 литров, 15 программ.', tag_list=['Для дома'], icon='multicooker'),
             dict(category=home_appliances, title='Кофемашина EspressoPro', price='34990.00', count=3,
                  description='Автоматическая кофемашина для дома и офиса.',
-                 tag_list=['Премиум'], is_limited=True),
+                 tag_list=['Премиум'], is_limited=True, icon='coffee_machine'),
             dict(category=components, title='Материнская плата TechBoard Z790', price='24990.00', count=7,
-                 description='Материнская плата для современных процессоров.', tag_list=['Игровой']),
+                 description='Материнская плата для современных процессоров.', tag_list=['Игровой'],
+                 icon='motherboard'),
         ]
 
         products = []
@@ -103,6 +118,7 @@ class Command(BaseCommand):
             tag_list = data.pop('tag_list')
             is_limited = data.pop('is_limited', False)
             is_banner = data.pop('is_banner', False)
+            icon = data.pop('icon')
             product, _ = Product.objects.get_or_create(
                 title=data['title'],
                 defaults=dict(
@@ -121,6 +137,11 @@ class Command(BaseCommand):
             Specification.objects.get_or_create(
                 product=product, name='Страна производства', defaults={'value': 'Китай'}
             )
+            # своих фотографий товаров нет — карточки на фронтенде безусловно
+            # обращаются к images[0].src, без картинки страница просто падает
+            if not product.images.exists():
+                product_image = ProductImage(product=product, alt=product.title)
+                product_image.image.save(f'{icon}.png', generate_product_image(icon), save=True)
             products.append(product)
 
         for product in (products[1], products[6], products[10]):

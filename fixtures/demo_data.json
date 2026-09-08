@@ -3,7 +3,7 @@
   "model": "auth.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$bnk1AvQNWjS8o4O2Q9VO9a$g2Fkur4eecBjKqPcFyssM6pMXSqtb0VuV/W5Fh6JnKE=",
+    "password": "pbkdf2_sha256$1000000$g4Xsa41pbdKLEt59yWTiNr$vdtQ9WnfeQWCIcFsOBVjOSr4PVxz1greh4JT66P43kY=",
     "last_login": null,
     "is_superuser": true,
     "username": "admin",
@@ -12,7 +12,7 @@
     "email": "admin@megano.local",
     "is_staff": true,
     "is_active": true,
-    "date_joined": "2026-09-07T14:29:52.699Z",
+    "date_joined": "2026-09-08T15:38:47.783Z",
     "groups": [
       1
     ],
@@ -23,7 +23,7 @@
   "model": "auth.user",
   "pk": 2,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$NObsIQkHdVfe8skHnWcp1m$nxnuk18xga7XCffTM4ZKIhtItidHzZ52Xc8/PJ2qwIA=",
+    "password": "pbkdf2_sha256$1000000$FbKC3bcHMzPDQzD5wMulIF$QuA9bYPcyx56aLt/jUnBKkKFJom6cq1tK8u6PqihuTo=",
     "last_login": null,
     "is_superuser": false,
     "username": "ivanov",
@@ -32,7 +32,7 @@
     "email": "ivanov@example.com",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-09-07T14:29:52.963Z",
+    "date_joined": "2026-09-08T15:38:48.100Z",
     "groups": [
       2
     ],
@@ -43,7 +43,7 @@
   "model": "auth.user",
   "pk": 3,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$gxs1bpez6VxSX3eMYmTxlc$q4ZR7zRlSQpJNZ8F+oP6mvQqEZ1X7d2Sla9EJVn5c7c=",
+    "password": "pbkdf2_sha256$1000000$0ubistM2D7qWSK86aUPzNL$8q+gCmhsXG4adUuT1bL6yYa2YODRxodrrPp95xuk/t0=",
     "last_login": null,
     "is_superuser": false,
     "username": "petrova",
@@ -52,7 +52,7 @@
     "email": "petrova@example.com",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2026-09-07T14:29:53.222Z",
+    "date_joined": "2026-09-08T15:38:48.402Z",
     "groups": [
       2
     ],
@@ -111,8 +111,8 @@
   "fields": {
     "title": "Компьютеры и ноутбуки",
     "parent": null,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/laptop.png",
+    "image_alt": "Компьютеры и ноутбуки"
   }
 },
 {
@@ -121,8 +121,8 @@
   "fields": {
     "title": "Ноутбуки",
     "parent": 1,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/laptop_FlJNLKG.png",
+    "image_alt": "Ноутбуки"
   }
 },
 {
@@ -131,8 +131,8 @@
   "fields": {
     "title": "Комплектующие",
     "parent": 1,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/motherboard.png",
+    "image_alt": "Комплектующие"
   }
 },
 {
@@ -141,8 +141,8 @@
   "fields": {
     "title": "Смартфоны и гаджеты",
     "parent": null,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/smartphone.png",
+    "image_alt": "Смартфоны и гаджеты"
   }
 },
 {
@@ -151,8 +151,8 @@
   "fields": {
     "title": "Смартфоны",
     "parent": 4,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/smartphone_n6lEAvb.png",
+    "image_alt": "Смартфоны"
   }
 },
 {
@@ -161,8 +161,8 @@
   "fields": {
     "title": "Наушники",
     "parent": 4,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/headphones.png",
+    "image_alt": "Наушники"
   }
 },
 {
@@ -171,8 +171,8 @@
   "fields": {
     "title": "Бытовая техника",
     "parent": null,
-    "image": "",
-    "image_alt": ""
+    "image": "categories/multicooker.png",
+    "image_alt": "Бытовая техника"
   }
 },
 {
@@ -218,7 +218,7 @@
     "title": "Ноутбук ProBook 15",
     "price": "54990.00",
     "count": 8,
-    "date": "2026-09-07T14:29:53.504Z",
+    "date": "2026-09-08T15:38:48.803Z",
     "description": "Ноутбук для работы и учёбы.",
     "full_description": "Ноутбук для работы и учёбы. Подробное описание уточняется у продавца.",
     "free_delivery": true,
@@ -239,7 +239,7 @@
     "title": "Игровой ноутбук StrikeForce 17",
     "price": "112990.00",
     "count": 3,
-    "date": "2026-09-07T14:29:53.512Z",
+    "date": "2026-09-08T15:38:48.822Z",
     "description": "Мощный игровой ноутбук с дискретной видеокартой.",
     "full_description": "Мощный игровой ноутбук с дискретной видеокартой. Подробное описание уточняется у продавца.",
     "free_delivery": true,
@@ -261,7 +261,7 @@
     "title": "Видеокарта GeForce RTX 4070",
     "price": "68990.00",
     "count": 5,
-    "date": "2026-09-07T14:29:53.518Z",
+    "date": "2026-09-08T15:38:48.838Z",
     "description": "Видеокарта для игр и работы с графикой.",
     "full_description": "Видеокарта для игр и работы с графикой. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -282,7 +282,7 @@
     "title": "SSD-накопитель 1TB NVMe",
     "price": "7990.00",
     "count": 25,
-    "date": "2026-09-07T14:29:53.525Z",
+    "date": "2026-09-08T15:38:48.855Z",
     "description": "Быстрый твердотельный накопитель.",
     "full_description": "Быстрый твердотельный накопитель. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -303,7 +303,7 @@
     "title": "Смартфон Vega X12",
     "price": "39990.00",
     "count": 15,
-    "date": "2026-09-07T14:29:53.531Z",
+    "date": "2026-09-08T15:38:48.870Z",
     "description": "Смартфон с тройной камерой и быстрой зарядкой.",
     "full_description": "Смартфон с тройной камерой и быстрой зарядкой. Подробное описание уточняется у продавца.",
     "free_delivery": true,
@@ -324,7 +324,7 @@
     "title": "Смартфон Vega Lite",
     "price": "19990.00",
     "count": 20,
-    "date": "2026-09-07T14:29:53.537Z",
+    "date": "2026-09-08T15:38:48.888Z",
     "description": "Бюджетный смартфон с хорошей автономностью.",
     "full_description": "Бюджетный смартфон с хорошей автономностью. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -345,7 +345,7 @@
     "title": "Беспроводные наушники SoundPods",
     "price": "6990.00",
     "count": 40,
-    "date": "2026-09-07T14:29:53.543Z",
+    "date": "2026-09-08T15:38:48.905Z",
     "description": "Полностью беспроводные наушники с шумоподавлением.",
     "full_description": "Полностью беспроводные наушники с шумоподавлением. Подробное описание уточняется у продавца.",
     "free_delivery": true,
@@ -366,7 +366,7 @@
     "title": "Наушники StudioMax (лимитированная серия)",
     "price": "24990.00",
     "count": 4,
-    "date": "2026-09-07T14:29:53.549Z",
+    "date": "2026-09-08T15:38:48.920Z",
     "description": "Полноразмерные наушники, лимитированная серия.",
     "full_description": "Полноразмерные наушники, лимитированная серия. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -387,7 +387,7 @@
     "title": "Робот-пылесос CleanBot 5",
     "price": "23990.00",
     "count": 6,
-    "date": "2026-09-07T14:29:53.555Z",
+    "date": "2026-09-08T15:38:48.936Z",
     "description": "Робот-пылесос с влажной уборкой.",
     "full_description": "Робот-пылесос с влажной уборкой. Подробное описание уточняется у продавца.",
     "free_delivery": true,
@@ -408,7 +408,7 @@
     "title": "Мультиварка ChefHome 6L",
     "price": "8990.00",
     "count": 12,
-    "date": "2026-09-07T14:29:53.560Z",
+    "date": "2026-09-08T15:38:48.954Z",
     "description": "Мультиварка на 6 литров, 15 программ.",
     "full_description": "Мультиварка на 6 литров, 15 программ. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -429,7 +429,7 @@
     "title": "Кофемашина EspressoPro",
     "price": "34990.00",
     "count": 3,
-    "date": "2026-09-07T14:29:53.566Z",
+    "date": "2026-09-08T15:38:48.970Z",
     "description": "Автоматическая кофемашина для дома и офиса.",
     "full_description": "Автоматическая кофемашина для дома и офиса. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -450,7 +450,7 @@
     "title": "Материнская плата TechBoard Z790",
     "price": "24990.00",
     "count": 7,
-    "date": "2026-09-07T14:29:53.572Z",
+    "date": "2026-09-08T15:38:48.986Z",
     "description": "Материнская плата для современных процессоров.",
     "full_description": "Материнская плата для современных процессоров. Подробное описание уточняется у продавца.",
     "free_delivery": false,
@@ -461,6 +461,126 @@
     "tags": [
       1
     ]
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "image": "products/laptop.png",
+    "alt": "Ноутбук ProBook 15",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 2,
+  "fields": {
+    "product": 2,
+    "image": "products/laptop_a3VmQCz.png",
+    "alt": "Игровой ноутбук StrikeForce 17",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 3,
+  "fields": {
+    "product": 3,
+    "image": "products/graphics_card.png",
+    "alt": "Видеокарта GeForce RTX 4070",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 4,
+  "fields": {
+    "product": 4,
+    "image": "products/ssd_stick.png",
+    "alt": "SSD-накопитель 1TB NVMe",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 5,
+  "fields": {
+    "product": 5,
+    "image": "products/smartphone.png",
+    "alt": "Смартфон Vega X12",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 6,
+  "fields": {
+    "product": 6,
+    "image": "products/smartphone_beNbJVQ.png",
+    "alt": "Смартфон Vega Lite",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 7,
+  "fields": {
+    "product": 7,
+    "image": "products/earbuds.png",
+    "alt": "Беспроводные наушники SoundPods",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 8,
+  "fields": {
+    "product": 8,
+    "image": "products/headphones.png",
+    "alt": "Наушники StudioMax (лимитированная серия)",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 9,
+  "fields": {
+    "product": 9,
+    "image": "products/robot_vacuum.png",
+    "alt": "Робот-пылесос CleanBot 5",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 10,
+  "fields": {
+    "product": 10,
+    "image": "products/multicooker.png",
+    "alt": "Мультиварка ChefHome 6L",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 11,
+  "fields": {
+    "product": 11,
+    "image": "products/coffee_machine.png",
+    "alt": "Кофемашина EspressoPro",
+    "sort_order": 0
+  }
+},
+{
+  "model": "catalog.productimage",
+  "pk": 12,
+  "fields": {
+    "product": 12,
+    "image": "products/motherboard.png",
+    "alt": "Материнская плата TechBoard Z790",
+    "sort_order": 0
   }
 },
 {
@@ -689,7 +809,7 @@
     "email": "ivanov@example.com",
     "text": "Отличный ноутбук, всё устраивает.",
     "rate": 5,
-    "date": "2026-09-07T14:29:53.583Z"
+    "date": "2026-09-08T15:38:49.007Z"
   }
 },
 {
@@ -702,7 +822,7 @@
     "email": "petrova@example.com",
     "text": "Хорошее соотношение цены и качества.",
     "rate": 4,
-    "date": "2026-09-07T14:29:53.586Z"
+    "date": "2026-09-08T15:38:49.011Z"
   }
 },
 {
@@ -715,7 +835,7 @@
     "email": "ivanov@example.com",
     "text": "Камера снимает хорошо, батарея держит день.",
     "rate": 5,
-    "date": "2026-09-07T14:29:53.588Z"
+    "date": "2026-09-08T15:38:49.014Z"
   }
 },
 {
@@ -724,8 +844,8 @@
   "fields": {
     "product": 2,
     "sale_price": "96041.50",
-    "date_from": "2026-09-04",
-    "date_to": "2026-09-17"
+    "date_from": "2026-09-05",
+    "date_to": "2026-09-18"
   }
 },
 {
@@ -734,8 +854,8 @@
   "fields": {
     "product": 7,
     "sale_price": "5941.50",
-    "date_from": "2026-09-04",
-    "date_to": "2026-09-17"
+    "date_from": "2026-09-05",
+    "date_to": "2026-09-18"
   }
 },
 {
@@ -744,8 +864,8 @@
   "fields": {
     "product": 11,
     "sale_price": "29741.50",
-    "date_from": "2026-09-04",
-    "date_to": "2026-09-17"
+    "date_from": "2026-09-05",
+    "date_to": "2026-09-18"
   }
 },
 {
@@ -762,7 +882,7 @@
   "pk": 1,
   "fields": {
     "user": 2,
-    "created_at": "2026-09-07T14:29:53.592Z",
+    "created_at": "2026-09-08T15:38:49.019Z",
     "full_name": "Иван Иванов",
     "email": "ivanov@example.com",
     "phone": "+7 900 111-22-33",
@@ -804,7 +924,7 @@
     "card_last4": "4242",
     "status": "success",
     "error_message": "",
-    "processed_at": "2026-09-07T14:29:53.595Z"
+    "processed_at": "2026-09-08T15:38:49.023Z"
   }
 }
 ]
