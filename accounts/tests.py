@@ -154,3 +154,16 @@ class ProfileAvatarViewTests(TestCase):
     def test_avatar_upload_without_file_fails(self):
         response = self.client.post('/api/profile/avatar', data={})
         self.assertEqual(response.status_code, 400)
+
+    def test_profile_get_returns_avatar_as_object_after_upload(self):
+        """Регрессия на замечание куратора: раньше GET /api/profile отдавал
+        avatar голой строкой, а profile.html ждёт объект {src, alt}
+        (`avatar.src`/`avatar.alt`) — из-за этого аватар не отображался,
+        хотя загрузка на бэкенде проходила успешно."""
+        self.client.post('/api/profile/avatar', data={'avatar': _png_file()})
+        response = self.client.get('/api/profile')
+        self.assertEqual(response.status_code, 200)
+        avatar = response.json()['avatar']
+        self.assertIsInstance(avatar, dict)
+        self.assertIn('src', avatar)
+        self.assertIn('alt', avatar)

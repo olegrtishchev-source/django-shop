@@ -17,7 +17,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['fullName', 'email', 'phone', 'avatar']
 
     def get_avatar(self, obj):
-        return obj.avatar.url if obj.avatar else None
+        # Раньше отдавали голую строку — фронтенд (profile.html) рендерит
+        # `<img :src="avatar.src">`, ждёт объект {src, alt}, как и в остальных
+        # местах проекта (ProductImageSerializer и т.п.), и как уже отдаёт
+        # ProfileAvatarView.post(). Несовпадение и было причиной того, что
+        # аватар не отображался после загрузки.
+        if not obj.avatar:
+            return None
+        return {'src': obj.avatar.url, 'alt': obj.full_name or ''}
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
