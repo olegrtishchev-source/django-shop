@@ -1,9 +1,10 @@
 import datetime
 from decimal import Decimal
 
+from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
-from catalog.models import Category, Product, Sale, Tag
+from catalog.models import Category, Product, ProductImage, Review, Sale, Specification, Tag
 
 
 class TagListViewTests(TestCase):
@@ -212,3 +213,107 @@ class StaticFilesServingTests(TestCase):
     def test_static_served_with_debug_true(self):
         response = self.client.get('/static/admin/css/base.css')
         self.assertEqual(response.status_code, 200)
+
+
+class ProductDetailViewTests(TestCase):
+    def setUp(self):
+        self.category = Category.objects.create(title='Ноутбуки')
+        self.product = Product.objects.create(
+            category=self.category, title='ProBook 15', price=Decimal('55000.00'),
+            count=3, description='Краткое описание', full_description='<p>Полное описание</p>',
+            free_delivery=True,
+        )
+        self.tag = Tag.objects.create(name='Новинка')
+        self.product.tags.add(self.tag)
+        ProductImage.objects.create(product=self.product, alt='Фото 1', sort_order=1)
+        ProductImage.objects.create(product=self.product, alt='Фото 0', sort_order=0)
+        Specification.objects.create(product=self.product, name='Экран', value='15.6"')
+        Review.objects.create(
+            product=self.product, author='Иван', email='ivan@example.com',
+            text='Отличный ноутбук', rate=5,
+        )
+
+    def test_returns_full_product_shape(self):
+        response = self.client.get(f'/api/product/{self.product.id}')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['title'], 'ProBook 15')
+        self.assertEqual(data['fullDescription'], '<p>Полное описание</p>')
+        self.assertIs(data['freeDelivery'], True)
+        self.assertEqual([img['alt'] for img in data['images']], ['Фото 0', 'Фото 1'])  # порядок по sort_order
+        self.assertEqual(data['tags'], [{'id': self.tag.id, 'name': 'Новинка'}])
+        self.assertEqual(len(data['reviews']), 1)
+        self.assertEqual(data['reviews'][0]['author'], 'Иван')
+        self.assertEqual(data['specifications'], [{'name': 'Экран', 'value': '15.6"'}])
+        self.assertEqual(Decimal(data['rating']), Decimal('5.00'))  # пересчитан сигналом при создании отзыва
+
+    def test_unknown_product_returns_404(self):
+        response = self.client.get('/api/product/999999')
+        self.assertEqual(response.status_code, 404)
+
+    def test_soft_deleted_product_returns_404(self):
+        self.product.is_deleted = True
+        self.product.save(update_fields=['is_deleted'])
+        response = self.client.get(f'/api/product/{self.product.id}')
+        self.assertEqual(response.status_code, 404)
+
+
+class ProductReviewsViewTests(TestCase):
+    def setUp(self):
+        category = Category.objects.create(title='Категория')
+        self.product = Product.objects.create(category=category, title='Товар', price=Decimal('1000.00'))
+
+    def test_create_review_returns_full_list_and_updates_rating(self):
+        Review.objects.create(product=self.product, author='Пётр', email='petr@example.com', text='Норм', rate=3)
+
+        response = self.client.post(
+            f'/api/product/{self.product.id}/reviews',
+            data={'author': 'Анна', 'email': 'anna@example.com', 'text': 'Хороший товар', 'rate': 5},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 2)
+        authors = {review['author'] for review in data}
+        self.assertEqual(authors, {'Пётр', 'Анна'})
+
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.rating, Decimal('4.00'))  # (3 + 5) / 2
+
+    def test_review_linked_to_logged_in_user(self):
+        user = User.objects.create_user(username='ivanov', password='123456')
+        self.client.force_login(user)
+
+        self.client.post(
+            f'/api/product/{self.product.id}/reviews',
+            data={'author': 'Ивaнов', 'email': 'ivanov@example.com', 'text': 'Хорошо', 'rate': 4},
+            content_type='application/json',
+        )
+        review = Review.objects.get(product=self.product)
+        self.assertEqual(review.user, user)
+
+    def test_missing_required_field_returns_400(self):
+        response = self.client.post(
+            f'/api/product/{self.product.id}/reviews',
+            data={'email': 'a@example.com', 'text': 'Текст', 'rate': 3},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('author', response.json())
+
+    def test_rate_out_of_range_returns_400(self):
+        response = self.client.post(
+            f'/api/product/{self.product.id}/reviews',
+            data={'author': 'Аноним', 'email': 'a@example.com', 'text': 'Текст', 'rate': 6},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('rate', response.json())
+
+    def test_unknown_product_returns_404(self):
+        response = self.client.post(
+            '/api/product/999999/reviews',
+            data={'author': 'Анна', 'email': 'a@example.com', 'text': 'Текст', 'rate': 3},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 404)

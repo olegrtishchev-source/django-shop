@@ -1,12 +1,17 @@
 from django.db.models import Count
-from rest_framework.generics import ListAPIView
+from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from catalog.models import Category, Product, Sale, Tag
 from catalog.serializers import (
     CategorySerializer,
+    ProductFullSerializer,
     ProductShortSerializer,
+    ReviewCreateSerializer,
+    ReviewSerializer,
     SaleItemSerializer,
     TagSerializer,
 )
@@ -147,3 +152,34 @@ class SalesView(ListAPIView):
     serializer_class = SaleItemSerializer
     pagination_class = CatalogPagination
     queryset = Sale.objects.select_related('product').order_by('date_from')
+
+
+class ProductDetailView(RetrieveAPIView):
+    """/api/product/<id> — детальная карточка товара, контракт ProductFull.
+    Мягко удалённые товары не отдаются (Product.objects — активный менеджер),
+    прямая ссылка на них — обычный 404, как и на несуществующий id."""
+
+    serializer_class = ProductFullSerializer
+    queryset = Product.objects.select_related('category').prefetch_related(
+        'images', 'tags', 'reviews', 'specifications',
+    )
+
+
+class ProductReviewsView(APIView):
+    """/api/product/<id>/reviews — путь взят из реального product-detail.js
+    (submitReview), а не из swagger: там эндпоинт ошибочно в единственном
+    числе — /product/{id}/review. Тот же класс расхождений, что уже
+    разбирался в 2.1-2.2, каждый эндпоинт сверяется с реальным JS отдельно.
+    Отдаёт весь актуальный список отзывов товара после создания — ровно то,
+    что фронтенд ждёт в `data` и кладёт в `this.product.reviews`."""
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        serializer = ReviewCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        review = serializer.save(product=product)
+        if request.user.is_authenticated:
+            review.user = request.user
+            review.save(update_fields=['user'])
+        reviews = product.reviews.all()
+        return Response(ReviewSerializer(reviews, many=True).data)

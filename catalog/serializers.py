@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from catalog.models import Category, Product, ProductImage, Sale, Tag
+from catalog.models import Category, Product, ProductImage, Review, Sale, Specification, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -86,3 +86,64 @@ class SaleItemSerializer(serializers.ModelSerializer):
 
     def get_images(self, obj):
         return ProductImageSerializer(obj.product.images.all(), many=True, context=self.context).data
+
+
+class SpecificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Specification
+        fields = ['name', 'value']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Отзыв для отображения — контракт Review из swagger. Дата отдаётся уже
+    отформатированной строкой (как и везде в проекте, где дата уходит на
+    фронтенд), формат — как в примере swagger ('2023-05-05 12:12')."""
+
+    date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Review
+        fields = ['author', 'email', 'text', 'rate', 'date']
+
+    def get_date(self, obj):
+        return obj.date.strftime('%Y-%m-%d %H:%M')
+
+
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    """Вход для POST /api/product/<id>/reviews — только то, что реально шлёт
+    submitReview() в product-detail.js (author/email/text/rate); product и
+    date выставляются во view, не берутся из тела запроса."""
+
+    class Meta:
+        model = Review
+        fields = ['author', 'email', 'text', 'rate']
+
+
+class ProductFullSerializer(serializers.ModelSerializer):
+    """Детальная карточка товара — контракт ProductFull из swagger.
+
+    Есть два расхождения со свагером, найденные чтением реального шаблона
+    product.html/product-detail.js (тот же принцип, что и в 2.1-2.3 — при
+    расхождении верим реальному коду, не тексту документации):
+    - `tags`: swagger описывает элементы как голые строки (tagId), но
+      шаблон делает `${ tag.name }$` — значит фронтенду нужны объекты тегов
+      (id+name), как и в ProductShort. Отдаём через TagSerializer.
+    - `reviews`: в ProductShort это число (счётчик), а в ProductFull —
+      массив объектов Review целиком (шаблон явно перебирает
+      `v-for="review in product.reviews"` и читает review.author/date/rate/text).
+    """
+
+    freeDelivery = serializers.BooleanField(source='free_delivery')
+    fullDescription = serializers.CharField(source='full_description')
+    images = ProductImageSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
+    specifications = SpecificationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'category', 'price', 'count', 'date', 'title', 'description',
+            'fullDescription', 'freeDelivery', 'images', 'tags', 'reviews',
+            'specifications', 'rating',
+        ]
