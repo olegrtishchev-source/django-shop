@@ -26,6 +26,18 @@ var mix = {
                 console.warn('Ошибка при получении товара')
             })
         },
+        // Если пользователь авторизован, подставляем его ФИО/email из профиля
+        // в форму отзыва — по аналогии с формой оформления заказа (ТЗ, стр. 5:
+        // "если пользователь авторизован, то данные выбираются из его профиля
+        // автоматически и подставляются в форму"). Для анонимного пользователя
+        // /api/profile отвечает 401 — тогда просто ничего не подставляем,
+        // форма остаётся как раньше, с пустыми полями.
+        prefillReviewFromProfile () {
+            this.getData('/api/profile').then(data => {
+                this.review.author = data.fullName || ''
+                this.review.email = data.email || ''
+            }).catch(() => {})
+        },
         submitReview () {
             this.postData(`/api/product/${this.product.id}/reviews`, {
                 author: this.review.author,
@@ -49,6 +61,7 @@ var mix = {
     },
     mounted () {
         this.getProduct();
+        this.prefillReviewFromProfile();
     },
     data() {
         return {

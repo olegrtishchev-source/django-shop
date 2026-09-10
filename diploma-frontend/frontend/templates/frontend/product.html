@@ -26,7 +26,7 @@
                 <img :src="product?.images ? product.images[activePhoto].src : null" :alt="product?.images ? product.images[activePhoto].alt : null"/>
               </div>
               <!-- Основное фото -->
-              
+
               <!-- Миниатюры -->
               <div class="ProductCard-picts">
                 <a v-for="(image, index) in product.images" class="ProductCard-pict" :class="{'ProductCard-pict_ACTIVE': activePhoto === index}" @click.prevent="setActivePhoto(index)">
@@ -96,7 +96,7 @@
               <div class="Tabs-block" id="description">
                 <div v-html="product.fullDescription"></div>
 
-                
+
                 <div class="clearfix">
                 </div>
                 <div class="table">
@@ -135,6 +135,7 @@
                     </div>
                   </div>
                 </div>
+                {% if user.is_authenticated %}
                 <header class="Section-header Section-header_product">
                   <h3 class="Section-title">Add Review</h3>
                 </header>
@@ -169,6 +170,14 @@
                     </div>
                   </form>
                 </div>
+                {% else %}
+                <header class="Section-header Section-header_product">
+                  <h3 class="Section-title">Add Review</h3>
+                </header>
+                <div class="Tabs-addComment">
+                  <p>Чтобы оставить отзыв, нужно <a href="/sign-in">авторизоваться</a>.</p>
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>
