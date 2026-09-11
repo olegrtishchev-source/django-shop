@@ -14,43 +14,101 @@ var mix = {
 					this.address = data.address
 					this.paymentType = data.paymentType
 					this.status = data.status
+					this.statusDisplay = data.statusDisplay
 					this.totalCost = data.totalCost
 					this.products = data.products
+					this.comment = data.comment || ''
 					console.log(this.products)
 					if (typeof data.paymentError !== 'undefined') {
 						this.paymentError = data.paymentError
 					}
 				})
 		},
+		// Отдельный от postData() запрос: postData() в своём catch скрывает
+		// тело ответа с ошибкой (error.response.data), а тут как раз нужен
+		// текст конкретной ошибки от сериализатора (например ТЗ-шный текст
+		// про уже существующий email), а не обезличенный alert.
+		register() {
+			return axios
+				.post(`/api/order/${this.orderId}/register`, {
+					fullName: this.fullName,
+					email: this.email,
+					phone: this.phone,
+					password: this.password,
+					passwordConfirm: this.passwordConfirm,
+				}, {
+					headers: { 'X-CSRFToken': this.getCookie('csrftoken') },
+				})
+		},
 		confirmOrder() {
-			if (this.orderId !== null) {
+			if (this.orderId === null) return
+
+			const doConfirm = () => {
 				this.postData(`/api/order/${this.orderId}`, { ...this })
 					.then(({ data: { orderId } }) => {
 						alert('Заказ подтвержден')
-						location.replace(`/payment/${orderId}/`)
+						const target = this.paymentType === 'someone'
+							? `/payment-someone/${orderId}/`
+							: `/payment/${orderId}/`
+						location.replace(target)
 					})
 					.catch(() => {
 						console.warn('Ошибка при подтверждения заказа')
 					})
 			}
+
+			// пароль заполнен только в форме для незарегистрированного
+			// покупателя (см. order.html) — значит перед подтверждением
+			// заказа его сначала нужно зарегистрировать и привязать заказ
+			// к новому пользователю
+			if (this.password) {
+				this.register()
+					.then(doConfirm)
+					.catch((error) => {
+						const data = error?.response?.data || {}
+						const message = data.email?.[0] || data.passwordConfirm?.[0] || 'Не удалось зарегистрироваться'
+						alert(message)
+						if (data.email) {
+							// email уже занят — конкретно эта ошибка ТЗ
+							// требует предложить войти, а не регистрироваться повторно
+							this.showLoginPopup = true
+						}
+					})
+				return
+			}
+
+			doConfirm()
 		},
-		auth() {
-			const username = document.querySelector('#username').value
-			const password = document.querySelector('#password').value
-			this.postData('/api/sign-in', JSON.stringify({ username, password }))
-				.then(({ data, status }) => {
-					location.assign(`/orders/${this.orderId}`)
+		login() {
+			this.postData('/api/sign-in', JSON.stringify({
+				username: this.loginUsername,
+				password: this.loginPassword,
+			}))
+				.then(() => {
+					// после входа данные пользователя должны подставиться в
+					// форму (ТЗ) — простой способ этого добиться — перечитать
+					// страницу: серверный `user.is_authenticated` и GET
+					// /api/order/{id} после этого уже вернут авторизованные данные
+					location.reload()
 				})
 				.catch(() => {
-					alert('Ошибка авторизации')
+					alert('Неверный логин или пароль')
 				})
 		}
 	},
 	mounted() {
-		if(location.pathname.startsWith('/orders/')) {
-			const orderId = location.pathname.replace('/orders/', '').replace('/', '')
-			this.orderId = orderId.length ? Number(orderId) : null
-			this.getOrder(this.orderId);
+		// один и тот же mixin используется и на странице оформления заказа
+		// (/orders/<id>/ — order.html), и на странице просмотра уже
+		// оформленного заказа (/order-detail/<id>/ — oneorder.html)
+		let rawOrderId = null
+		if (location.pathname.startsWith('/orders/')) {
+			rawOrderId = location.pathname.replace('/orders/', '').replace(/\/$/, '')
+		} else if (location.pathname.startsWith('/order-detail/')) {
+			rawOrderId = location.pathname.replace('/order-detail/', '').replace(/\/$/, '')
+		}
+		if (rawOrderId !== null && rawOrderId.length) {
+			this.orderId = Number(rawOrderId)
+			this.getOrder(this.orderId)
 		}
 	},
 	data() {
@@ -65,9 +123,16 @@ var mix = {
 			address: null,
 			paymentType: null,
 			status: null,
+			statusDisplay: null,
 			totalCost: null,
 			products: [],
 			paymentError: null,
+			comment: '',
+			password: '',
+			passwordConfirm: '',
+			showLoginPopup: false,
+			loginUsername: '',
+			loginPassword: '',
 		}
 	},
 }

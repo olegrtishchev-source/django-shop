@@ -192,7 +192,31 @@ class Command(BaseCommand):
                                       price=products[0].price, quantity=1)
             OrderItem.objects.create(order=order, product=products[3], title=products[3].title,
                                       price=products[3].price, quantity=1)
-            Payment.objects.create(order=order, card_last4='4242', status=Payment.Status.SUCCESS,
+            Payment.objects.create(order=order, number_last4='4242', status=Payment.Status.SUCCESS,
                                     processed_at=timezone.now())
+
+        # Второй демо-заказ — с ошибкой оплаты, чтобы в истории заказов и на
+        # странице заказа сразу было видно отображение статуса/ошибки и
+        # кнопку «Оплатить ещё раз» (ТЗ, стр. 6), не только успешный сценарий
+        order2, created2 = Order.objects.get_or_create(
+            user=buyer2,
+            full_name='Петрова Мария',
+            defaults=dict(
+                email='petrova@example.com',
+                phone='+7 900 222-33-44',
+                delivery_type=Order.DeliveryType.EXPRESS,
+                payment_type=Order.PaymentType.SOMEONE,
+                total_cost=decimal.Decimal(products[1].price) + decimal.Decimal(500),
+                status=Order.Status.NOT_PAID,
+                city='Санкт-Петербург',
+                address='Невский проспект, д. 10',
+                comment='Позвоните перед доставкой',
+            ),
+        )
+        if created2:
+            OrderItem.objects.create(order=order2, product=products[1], title=products[1].title,
+                                      price=products[1].price, quantity=1)
+            Payment.objects.create(order=order2, number_last4='1357', status=Payment.Status.FAILED,
+                                    error_message='Банк отклонил операцию', processed_at=timezone.now())
 
         self.stdout.write(self.style.SUCCESS('Демоданные готовы.'))

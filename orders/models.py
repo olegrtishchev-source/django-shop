@@ -22,12 +22,20 @@ class Order(models.Model):
         PAID = 'paid', 'Оплачен'
         NOT_PAID = 'not_paid', 'Ошибка оплаты'
 
-    user = models.ForeignKey(User, verbose_name='покупатель', related_name='orders', on_delete=models.CASCADE)
+    # null=True — по ТЗ (стр. 4-5) незарегистрированный пользователь может
+    # собрать корзину и нажать «Оформить заказ» ДО регистрации/входа: заказ
+    # создаётся анонимным (user=None), id кладём в сессию (см.
+    # OrderView._get_or_check_pending в views.py), а как только на Шаге 1
+    # происходит регистрация или вход — заказ прикрепляется к пользователю.
+    user = models.ForeignKey(
+        User, verbose_name='покупатель', related_name='orders', null=True, blank=True, on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField('дата создания', auto_now_add=True)
 
-    full_name = models.CharField('ФИО', max_length=255)
-    email = models.EmailField('email')
-    phone = models.CharField('телефон', max_length=20)
+    full_name = models.CharField('ФИО', max_length=255, blank=True)
+    email = models.EmailField('email', blank=True)
+    phone = models.CharField('телефон', max_length=20, blank=True)
+    comment = models.TextField('комментарий к заказу', blank=True)
 
     delivery_type = models.CharField(
         'тип доставки', max_length=20, choices=DeliveryType.choices, default=DeliveryType.STANDARD
@@ -44,7 +52,10 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
-        ordering = ['-created_at']
+        # -id вторым ключом — без него у двух заказов, созданных в один и тот
+        # же момент (created_at совпадает с точностью БД), порядок в истории
+        # не гарантирован; ТЗ требует именно убывание даты оформления
+        ordering = ['-created_at', '-id']
 
     def __str__(self):
         return f'Заказ №{self.pk} от {self.full_name}'
@@ -70,8 +81,10 @@ class OrderItem(models.Model):
 
 
 class Payment(models.Model):
-    """Результат обработки оплаты заказа. Полный номер карты не хранится —
-    только последние 4 цифры, для истории."""
+    """Результат обработки оплаты заказа. Полный номер (карты или «чужого
+    счёта» — по ТЗ для обоих способов используется одно и то же поле ввода
+    и одна и та же валидация) не хранится — только последние 4 цифры, для
+    истории."""
 
     class Status(models.TextChoices):
         PENDING = 'pending', 'В обработке'
@@ -79,7 +92,7 @@ class Payment(models.Model):
         FAILED = 'failed', 'Отклонено'
 
     order = models.OneToOneField(Order, related_name='payment', on_delete=models.CASCADE)
-    card_last4 = models.CharField('последние 4 цифры карты', max_length=4, blank=True)
+    number_last4 = models.CharField('последние цифры номера', max_length=4, blank=True)
     status = models.CharField('статус', max_length=20, choices=Status.choices, default=Status.PENDING)
     error_message = models.CharField('сообщение об ошибке', max_length=255, blank=True)
     processed_at = models.DateTimeField('дата обработки', null=True, blank=True)

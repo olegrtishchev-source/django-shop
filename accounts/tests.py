@@ -167,3 +167,36 @@ class ProfileAvatarViewTests(TestCase):
         self.assertIsInstance(avatar, dict)
         self.assertIn('src', avatar)
         self.assertIn('alt', avatar)
+
+
+class AccountViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='account_user', password='pass12345')
+        Profile.objects.create(user=self.user, full_name='Тестовый Пользователь')
+
+    def test_requires_authentication(self):
+        response = self.client.get('/api/account/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_profile_data_with_no_orders(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/api/account/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['fullName'], 'Тестовый Пользователь')
+        self.assertIsNone(data['avatar'])
+        self.assertEqual(data['orders'], [])
+
+    def test_returns_only_the_most_recent_order(self):
+        from orders.models import Order
+
+        older_order = Order.objects.create(user=self.user, full_name='Тестовый Пользователь')
+        newer_order = Order.objects.create(user=self.user, full_name='Тестовый Пользователь')
+
+        self.client.force_login(self.user)
+        response = self.client.get('/api/account/')
+        self.assertEqual(response.status_code, 200)
+        orders = response.json()['orders']
+        self.assertEqual(len(orders), 1)
+        self.assertEqual(orders[0]['id'], newer_order.id)
+        self.assertNotEqual(orders[0]['id'], older_order.id)

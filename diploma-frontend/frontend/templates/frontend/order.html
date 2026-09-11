@@ -20,7 +20,6 @@
     <div class="Section Section_column Section_columnRight Section_columnWide Order">
       <div class="wrap">
         <div class="Section-column">
-          {% if user.is_authenticated %}
           <div class="Section-columnSection">
             <header class="Section-header">
               <strong class="Section-title">Прогресс заполнения
@@ -39,10 +38,8 @@
               </ul>
             </div>
           </div>
-          {% endif %}
         </div>
         <div class="Section-content">
-          {% if user.is_authenticated %}
           <form class="form" action="#" method="post" @submit.prevent="confirmOrder">
             <div class="Order-block Order-block_OPEN" id="step1">
               <header class="Section-header Section-header_sm">
@@ -63,6 +60,19 @@
                     <label class="form-label" for="mail">E-mail</label>
                     <input class="form-input" v-model="email" id="mail" name="mail" type="text" value="" data-validate="require"/>
                   </div>
+                  {% if not user.is_authenticated %}
+                  <div class="form-group">
+                    <label class="form-label" for="orderPassword">Пароль</label>
+                    <input class="form-input" v-model="password" id="orderPassword" name="password" type="password"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="orderPasswordConfirm">Подтверждение пароля</label>
+                    <input class="form-input" v-model="passwordConfirm" id="orderPasswordConfirm" name="passwordConfirm" type="password"/>
+                  </div>
+                  <div class="form-group">
+                    <a class="trigger" href="#" @click.prevent="showLoginPopup = true">Я уже зарегистрирован</a>
+                  </div>
+                  {% endif %}
                 </div>
               </div>
               <div class="Order-footer"><a class="btn btn_success Order-next" href="#step2">Дальше</a>
@@ -174,6 +184,11 @@
                       </div>
                     </div>
                   </div>
+                  <div class="form-group">
+                    <label class="form-label" for="comment">Комментарий к заказу
+                    </label>
+                    <textarea class="form-textarea" v-model="comment" name="comment" id="comment"></textarea>
+                  </div>
                 </div>
                 <div class="Cart Cart_order">
                   <!-- Товар на оплату -->
@@ -213,30 +228,31 @@
                 </div>
               </div>
           </form>
-         {% else %}
-        <div class="row-block">
-          <form method="post" @submit.prevent="auth">
-            {% csrf_token %}
-            <div class="form-group">
-              <label class="form-label" for="username">Логин</label>
-              <input class="form-input" id="username" name="username" type="text" placeholder="Login"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="password">Пароль</label>
-              <input class="form-input" id="password" name="password" type="password" placeholder="Password"/>
-            </div>
-            <div class="form-group">
-              <button class="btn btn_muted Order-btnReg" type="submit">Авторизация</button>
-            </div>
-            <div class="form-group"><a class="btn btn_muted Order-btnReg" href="/sign-up/">Регистрация</a>
-          </div>
-          </form>
-        </div>
-        {% endif %}
         </div>
       </div>
     </div>
   </div>
+  {% if not user.is_authenticated %}
+  <div class="modal modal_OPEN" v-if="showLoginPopup" @click.self="showLoginPopup = false">
+    <div class="modal-window">
+      <a href="#" class="modal-close fa fa-close" @click.prevent="showLoginPopup = false"></a>
+      <strong class="modal-title">Вход</strong>
+      <form class="form" @submit.prevent="login">
+        <div class="form-group">
+          <label class="form-label" for="loginUsername">Логин</label>
+          <input class="form-input" v-model="loginUsername" id="loginUsername" name="loginUsername" type="text"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Пароль</label>
+          <input class="form-input" v-model="loginPassword" id="loginPassword" name="loginPassword" type="password"/>
+        </div>
+        <div class="form-group">
+          <button class="btn btn_muted" type="submit">Войти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
 {% endblock %}
 
 {% block mixins %}

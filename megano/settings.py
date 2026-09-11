@@ -95,6 +95,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 FIXTURE_DIRS = [BASE_DIR / 'fixtures']
 
+# Celery — оплата обрабатывается асинхронно (orders/tasks.py,
+# process_payment), брокер задаётся через .env, без ALWAYS_EAGER — очередь
+# честная, как и было решено 07.09.2026 (в отличие от зеркала для тестов,
+# там задачи выполняются синхронно).
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+
 REST_FRAMEWORK = {
     # Аутентификация по сессии — фронтенд уже шлёт куки сессии и X-CSRFToken,
     # отдельный токен/JWT не нужен, вход/выход через /api/sign-in, /api/sign-out.

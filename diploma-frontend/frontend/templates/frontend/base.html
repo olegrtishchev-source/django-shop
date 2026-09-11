@@ -53,7 +53,7 @@
             <div class="row ControlPanel-rowSplit">
                 {% if user.is_authenticated %}
                   <div class="row-block">
-                    <a class="ControlPanel-title" href="/profile">{{ user.username }}</a>
+                    <a class="ControlPanel-title" href="/account/">{{ user.username }}</a>
                   </div>
                   <div class="row-block">
                     <a class="ControlPanel-title" href="#" @click.prevent="signOut()">Log out</a>

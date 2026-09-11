@@ -1,42 +1,32 @@
 var mix = {
 	methods: {
+		// postData() из app.js в catch скрывает тело ответа с ошибкой — а тут
+		// как раз нужен конкретный текст валидации (нечётный номер, не только
+		// цифры и т.п.), поэтому запрос — напрямую через axios
 		submitPayment() {
 			const orderId = location.pathname.startsWith('/payment/')
-				? Number(location.pathname.replace('/payment/', '').replace('/', ''))
+				? Number(location.pathname.replace('/payment/', '').replace(/\/$/, ''))
 				: null
-			console.log({
-				name: this.name,
-				number: this.number1,
-				year: this.year,
-				month: this.month,
-				code: this.code,
-			})
-			this.postData(`/api/payment/${orderId}`, {
-				name: this.name,
-				number: this.number1,
-				year: this.year,
-				month: this.month,
-				code: this.code
-			}).then(() => {
-				alert('Успешная оплата')
-				this.number1 = ''
-				this.name = ''
-				this.year = ''
-				this.month = ''
-				this.code = ''
-				location.assign('/')
-			}).catch(() => {
-			 	console.warn('Ошибка при оплате')
-			})
+			if (orderId === null) return
+
+			axios
+				.post(`/api/payment/${orderId}`, { number: this.number1 }, {
+					headers: { 'X-CSRFToken': this.getCookie('csrftoken') },
+				})
+				.then(() => {
+					// оплата обрабатывается асинхронно (Celery) — сразу
+					// «успешной оплаты» ещё нет, ведём на страницу ожидания
+					location.assign(`/progress-payment/${orderId}/`)
+				})
+				.catch((error) => {
+					const message = error?.response?.data?.number?.[0] || 'Ошибка при оплате'
+					alert(message)
+				})
 		}
 	},
 	data() {
 		return {
 			number1: '',
-			month: '',
-			year: '',
-			name: '',
-			code: ''
 		}
 	}
 }

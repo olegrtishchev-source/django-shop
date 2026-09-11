@@ -92,6 +92,39 @@ class ProfilePasswordView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class AccountView(APIView):
+    """GET /api/account/ — сводная страница личного кабинета
+    (account.html/userAccount.js): аватар, ФИО и последний заказ покупателя
+    со ссылкой на него (ТЗ, стр. 267: «отображаются два блока: аватарка,
+    Ф. И. О. и ссылка на редактирование профиля; последний заказ
+    покупателя»). Раздел доступен только авторизованному пользователю."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # локальный импорт — иначе цикл на уровне модулей (orders.views уже
+        # импортирует accounts.models.Profile)
+        from orders.models import Order
+        from orders.serializers import OrderSerializer
+
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        last_order = (
+            Order.objects.filter(user=request.user)
+            .select_related('payment')
+            .prefetch_related('items__product__images')
+            .first()
+        )
+        avatar = None
+        if profile.avatar:
+            avatar = {'src': profile.avatar.url, 'alt': profile.full_name or ''}
+
+        return Response({
+            'fullName': profile.full_name,
+            'avatar': avatar,
+            'orders': [OrderSerializer(last_order, context={'request': request}).data] if last_order else [],
+        })
+
+
 class ProfileAvatarView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
