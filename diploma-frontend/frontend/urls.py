@@ -6,6 +6,7 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name="frontend/about.html")),
     path('account/', TemplateView.as_view(template_name="frontend/account.html")),
     path('cart/', TemplateView.as_view(template_name="frontend/cart.html")),
+    path('compare/', TemplateView.as_view(template_name="frontend/compare.html")),
     path('catalog/', TemplateView.as_view(template_name="frontend/catalog.html")),
     path('catalog/<int:id>/', TemplateView.as_view(template_name="frontend/catalog.html")),
     path('history-order/', TemplateView.as_view(template_name="frontend/historyorder.html")),

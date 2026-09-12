@@ -313,7 +313,100 @@ class ProductReviewsViewTests(TestCase):
     def test_unknown_product_returns_404(self):
         response = self.client.post(
             '/api/product/999999/reviews',
-            data={'author': 'Анна', 'email': 'a@example.com', 'text': 'Текст', 'rate': 3},
+            data={'author': 'Аноним', 'email': 'a@example.com', 'text': 'Текст', 'rate': 3},
             content_type='application/json',
         )
         self.assertEqual(response.status_code, 404)
+
+
+class CompareViewTests(TestCase):
+    def setUp(self):
+        self.laptops = Category.objects.create(title='Ноутбуки')
+        self.phones = Category.objects.create(title='Смартфоны')
+        self.p1 = Product.objects.create(category=self.laptops, title='ProBook 15', price=Decimal('55000.00'))
+        self.p2 = Product.objects.create(category=self.laptops, title='Vega X12', price=Decimal('60000.00'))
+        self.p3 = Product.objects.create(category=self.laptops, title='Omen 16', price=Decimal('70000.00'))
+        self.p4 = Product.objects.create(category=self.laptops, title='ThinkPad E15', price=Decimal('45000.00'))
+        self.p5 = Product.objects.create(category=self.laptops, title='IdeaPad 3', price=Decimal('40000.00'))
+        self.phone = Product.objects.create(category=self.phones, title='Pixel 9', price=Decimal('80000.00'))
+        Specification.objects.create(product=self.p1, name='Экран', value='15.6"')
+
+    def test_empty_compare_returns_empty_list(self):
+        response = self.client.get('/api/compare')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['items'], [])
+        self.assertIsNone(data['category'])
+        self.assertEqual(data['maxItems'], 4)
+
+    def test_add_product_appears_in_list_with_specifications(self):
+        response = self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data['items']), 1)
+        self.assertEqual(data['items'][0]['title'], 'ProBook 15')
+        self.assertEqual(data['items'][0]['specifications'], [{'name': 'Экран', 'value': '15.6"'}])
+        self.assertEqual(data['category']['title'], 'Ноутбуки')
+
+    def test_add_same_product_twice_is_idempotent(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        response = self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        self.assertEqual(len(response.json()['items']), 1)
+
+    def test_add_second_product_same_category_ok(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        response = self.client.post('/api/compare', data={'id': self.p2.id}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        titles = [item['title'] for item in response.json()['items']]
+        self.assertEqual(titles, ['ProBook 15', 'Vega X12'])  # порядок добавления сохранён
+
+    def test_add_different_category_without_replace_returns_409(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        response = self.client.post('/api/compare', data={'id': self.phone.id}, content_type='application/json')
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['code'], 'different_category')
+        # список не подменился молча
+        self.assertEqual(len(self.client.get('/api/compare').json()['items']), 1)
+
+    def test_add_different_category_with_replace_resets_list(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        response = self.client.post(
+            '/api/compare', data={'id': self.phone.id, 'replace': True}, content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data['items']), 1)
+        self.assertEqual(data['items'][0]['title'], 'Pixel 9')
+
+    def test_limit_reached_returns_400(self):
+        for product in (self.p1, self.p2, self.p3, self.p4):
+            self.client.post('/api/compare', data={'id': product.id}, content_type='application/json')
+        response = self.client.post('/api/compare', data={'id': self.p5.id}, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['code'], 'limit_reached')
+
+    def test_delete_single_item(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        self.client.post('/api/compare', data={'id': self.p2.id}, content_type='application/json')
+        response = self.client.delete(
+            '/api/compare', data={'id': self.p1.id}, content_type='application/json',
+        )
+        titles = [item['title'] for item in response.json()['items']]
+        self.assertEqual(titles, ['Vega X12'])
+
+    def test_delete_without_id_clears_all(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        self.client.post('/api/compare', data={'id': self.p2.id}, content_type='application/json')
+        response = self.client.delete('/api/compare', data={}, content_type='application/json')
+        self.assertEqual(response.json()['items'], [])
+
+    def test_unknown_product_returns_404(self):
+        response = self.client.post('/api/compare', data={'id': 999999}, content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_deleted_product_cleaned_from_session(self):
+        self.client.post('/api/compare', data={'id': self.p1.id}, content_type='application/json')
+        self.p1.is_deleted = True
+        self.p1.save(update_fields=['is_deleted'])
+        response = self.client.get('/api/compare')
+        self.assertEqual(response.json()['items'], [])

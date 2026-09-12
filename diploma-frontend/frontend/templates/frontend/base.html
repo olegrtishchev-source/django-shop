@@ -13,21 +13,21 @@
   <link href="{% static 'frontend/assets/fonts/Roboto/Roboto-Bold_Italic.woff' %}" as="font">
   <link href="{% static 'frontend/assets/fonts/Roboto/Roboto-Light.woff' %}" as="font">
   <link href="{% static 'frontend/assets/fonts/Roboto/Roboto-Light_Italic.woff' %}" as="font">
-  <link rel="stylesheet" href="{% static 'frontend/assets/css/fonts.css' %}">
-  <link rel="stylesheet" href="{% static 'frontend/assets/css/basic.css' %}">
-  <link rel="stylesheet" href="{% static 'frontend/assets/css/extra.css' %}">
+  <link rel="stylesheet" href="{% static 'frontend/assets/css/fonts.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'frontend/assets/css/basic.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'frontend/assets/css/extra.css' %}?v={% now 'U' %}">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <!--  <script src="{% static 'frontend/assets/plg/vue.global.js' %}"></script>-->
   <script src="{% static 'frontend/assets/plg/CountDown/countdown.js' %}"></script>
 
-  <script defer src="{% static 'frontend/assets/js/app.js' %}"></script>
+  <script defer src="{% static 'frontend/assets/js/app.js' %}?v={% now 'U' %}"></script>
   <script defer src="{% static 'frontend/assets/plg/jQuery/jquery-3.5.0.slim.min.js' %}"></script>
   <script defer src="{% static 'frontend/assets/plg/form/jquery.form.js' %}"></script>
   <script defer src="{% static 'frontend/assets/plg/form/jquery.maskedinput.min.js' %}"></script>
   <script defer src="{% static 'frontend/assets/plg/range/ion.rangeSlider.min.js' %}"></script>
   <script defer src="{% static 'frontend/assets/plg/Slider/slick.min.js' %}"></script>
-  <script defer src="{% static 'frontend/assets/js/scripts.js' %}"></script>
+  <script defer src="{% static 'frontend/assets/js/scripts.js' %}?v={% now 'U' %}"></script>
 </head>
 <body class="Site" id="site">
   <header class="Header">
@@ -67,7 +67,7 @@
       <div class="row Header-rowMain">
         <div class="row-block Header-logo"><a class="logo" href="/"><img class="logo-image" src="{% static 'frontend/assets/img/logo.png' %}" alt="logo.png"/></a>
         </div>
-        <nav class="row-block row-block_right Header-menu">
+        <nav class="row-block Header-menu">
           <div class="menuModal" id="navigate">
             <ul class="menu menu_main">
               <li class="menu-item"><a class="menu-link" href="/">Главная</a>
@@ -83,11 +83,14 @@
             </ul>
           </div>
         </nav>
+        <div class="row-block row-block_right">
+          <div class="CartBlock"><a class="CartBlock-block CartBlock-block_stacked" href="/compare/">
+            <span class="CartBlock-iconWrap"><img class="CartBlock-img" src="{% static 'frontend/assets/img/icons/exchange.svg' %}?v={% now 'U' %}" alt="exchange.svg"/><span class="CartBlock-amount" v-text="compareCount"></span></span><span class="CartBlock-label">Сравнение</span></a>
+          </div>
+        </div>
         <div class="row-block">
-          <div class="CartBlock"><a class="CartBlock-block" href="/cart/">
-            <img class="CartBlock-img" src="{% static 'frontend/assets/img/icons/cart.svg' %}" alt="cart.svg"/><span class="CartBlock-amount" v-text="basketCount.count"></span></a>
-            <div class="CartBlock-block"><span class="CartBlock-price">${basketCount.price}$$</span>
-            </div>
+          <div class="CartBlock"><a class="CartBlock-block CartBlock-block_stacked" href="/cart/">
+            <span class="CartBlock-iconWrap"><img class="CartBlock-img" src="{% static 'frontend/assets/img/icons/cart.svg' %}?v={% now 'U' %}" alt="cart.svg"/><span class="CartBlock-amount" v-text="basketCount.count"></span></span><span class="CartBlock-price">${basketCount.price}$ ₽</span></a>
           </div>
         </div>
         <div class="row-block Header-trigger">
@@ -156,7 +159,7 @@
     <div class="wrap">
       <div class="row Footer-main">
         <div class="row-block"><a class="logo Footer-logo" href="/"><img class="logo-image" src="{% static 'frontend/assets/img/logo_footer.png' %}" alt="logo_footer.png"/></a>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincid  unt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad
+          <p>Megano — интернет-магазин с широким ассортиментом товаров: от электроники и аксессуаров до одежды и товаров для дома. Работаем для того, чтобы каждая покупка была быстрой, удобной и приятной.
           </p>
           <ul class="menu menu_img menu_smallImg Footer-menuSoc">
             <li class="menu-item"><a class="menu-link" href="#"><img src="{% static 'frontend/assets/img/icons/socialFooter/vk.svg' %}" alt="ВКонтакте"/></a></li>
@@ -202,7 +205,7 @@
         <div class="row-block">
           <strong class="Footer-title">Контакты
           </strong>
-          <p>Телефон: 8.800.200.600<br>Email: Support@ninzio.com<br>Адрес: г. Москва,<br>ул. Тверская, д. 7<br>125009
+          <p>Телефон: 8.800.200.600<br>Эл. почта: Support@ninzio.com<br>Адрес: г. Москва,<br>ул. Тверская, д. 7<br>125009
           </p>
         </div>
       </div>
@@ -210,7 +213,7 @@
     <div class="Footer-copy">
       <div class="wrap">
         <div class="row row_space">
-          <div class="row-block">© Copyright&#32;<a href="#">Megano Store.</a>&#32;Все права защищены.
+          <div class="row-block">© <a href="#">Megano Store.</a>&#32;Все права защищены.
           </div>
           <div class="row-block"><span>Способы оплаты</span>
             <div class="Footer-payments">

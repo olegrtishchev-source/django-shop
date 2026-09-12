@@ -1480,6 +1480,10 @@ label.toggle {
 .menu_img .menu-item + .menu-item {
   margin-left: 17px;
 }
+.ControlPanel-menu .menu-item + .menu-item,
+.Footer-menuSoc .menu-item + .menu-item {
+  margin-left: 10px;
+}
 .menu_img .menu-link {
   background: no-repeat center center;
   background-size: 100%;
@@ -1498,8 +1502,8 @@ label.toggle {
   display: inline-flex;
 }
 .menu_smallImg .menu-item {
-  width: 16px;
-  height: 16px;
+  width: 28px;
+  height: 28px;
 }
 .menu_smallImg .menu-item a {
   display: flex;
@@ -1507,7 +1511,10 @@ label.toggle {
   justify-content: center;
 }
 .menu_smallImg .menu-item a img {
+  width: 28px;
+  height: 28px;
   transform: scale(1);
+  border-radius: 5px;
 }
 @media screen and (min-width: 990px) {
   .menu_smallImg .menu-item a:hover img {

@@ -1,0 +1,69 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="Middle Middle_top">
+    <div class="Middle-top">
+      <div class="wrap">
+        <div class="Middle-header">
+          <h1 class="Middle-title">Сравнение товаров</h1>
+          <ul class="breadcrumbs Middle-breadcrumbs">
+            <li class="breadcrumbs-item"><a href="/">Главная</a>
+            </li>
+            <li class="breadcrumbs-item breadcrumbs-item_current"><span>Сравнение</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="Section">
+      <div class="wrap">
+
+        <div v-if="Object.keys(compare).length === 0">
+          <p>Список сравнения пуст. Добавьте товары со страницы каталога или карточки товара.</p>
+        </div>
+
+        <div v-else>
+          <p v-if="compareCategory">Категория: <strong>${ compareCategory.title }$</strong></p>
+
+          <div class="table">
+            <table>
+              <tr>
+                <th></th>
+                <td v-for="product in Object.values(compare)" :key="'photo' + product.id">
+                  <a :href="`/product/${product.id}/`">
+                    <img :src="product.images[0] ? product.images[0].src : ''" :alt="product.images[0] ? product.images[0].alt : ''" style="max-width:120px"/>
+                    <div>${ product.title }$</div>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <th>Цена</th>
+                <td v-for="product in Object.values(compare)" :key="'price' + product.id">${ product.price }$ ₽</td>
+              </tr>
+              <tr>
+                <th>Рейтинг</th>
+                <td v-for="product in Object.values(compare)" :key="'rating' + product.id">${ product.rating }$</td>
+              </tr>
+              <tr v-for="specName in compareSpecNames" :key="specName">
+                <th>${ specName }$</th>
+                <td v-for="product in Object.values(compare)" :key="specName + product.id">
+                  ${ (product.specifications.find(s => s.name === specName) || {}).value || '—' }$
+                </td>
+              </tr>
+              <tr>
+                <th></th>
+                <td v-for="product in Object.values(compare)" :key="'del' + product.id">
+                  <button type="button" class="btn btn_muted" @click="removeFromCompare(product.id)">Удалить</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <button type="button" class="btn btn_danger" @click="clearCompare">Очистить сравнение</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

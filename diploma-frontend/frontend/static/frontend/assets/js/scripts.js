@@ -290,12 +290,12 @@ var range = function(){
             
             $line.ionRangeSlider({
                 onStart: function(data){
-                    $('.rangePrice').text('$' + data.from + ' - $' + data.to)
+                    $('.rangePrice').text(data.from + ' ₽ - ' + data.to + ' ₽')
                     $("input[name=minPrice]").val( data.from)
                     $("input[name=maxPrice]").val( data.to)
                 },
                 onChange: function(data){
-                    $('.rangePrice').text('$' + data.from + ' - $' + data.to)
+                    $('.rangePrice').text(data.from + ' ₽ - ' + data.to + ' ₽')
                     $("input[name=minPrice]").val( data.from)
                     $("input[name=maxPrice]").val( data.to)
                 }

@@ -12,4 +12,5 @@ urlpatterns = [
     path('sales', views.SalesView.as_view()),
     path('product/<int:pk>', views.ProductDetailView.as_view()),
     path('product/<int:pk>/reviews', views.ProductReviewsView.as_view()),
+    path('compare', views.CompareView.as_view()),
 ]

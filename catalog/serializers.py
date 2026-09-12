@@ -147,3 +147,17 @@ class ProductFullSerializer(serializers.ModelSerializer):
             'fullDescription', 'freeDelivery', 'images', 'tags', 'reviews',
             'specifications', 'rating',
         ]
+
+
+class CompareItemSerializer(serializers.ModelSerializer):
+    """Карточка товара для страницы сравнения (/api/compare, Этап 3).
+    Готового контракта в swagger.yaml нет — эндпоинт и страница сделаны
+    с нуля (см. ниже CompareView), набор полей подобран под таблицу
+    сравнения: карточка товара + полный список характеристик."""
+
+    images = ProductImageSerializer(many=True, read_only=True)
+    specifications = SpecificationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'category', 'title', 'price', 'rating', 'images', 'specifications']

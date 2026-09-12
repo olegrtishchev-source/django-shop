@@ -9,7 +9,7 @@
           <h1 class="Middle-title">Заказ №${orderId}$
           </h1>
           <ul class="breadcrumbs Middle-breadcrumbs">
-            <li class="breadcrumbs-item"><a href="/">Home</a>
+            <li class="breadcrumbs-item"><a href="/">Главная</a>
             </li>
             <li class="breadcrumbs-item"><a href="/history-order/">История заказов</a>
             </li>
@@ -42,7 +42,7 @@
                       <div class="Order-infoContent">${phone}$</div>
                     </div>
                     <div class="Order-info">
-                      <div class="Order-infoType">E-mail:</div>
+                      <div class="Order-infoType">Эл. почта:</div>
                       <div class="Order-infoContent">${email}$</div>
                     </div>
                   </div>
@@ -87,7 +87,7 @@
                       <div class="Cart-desc">${product.description}$</div>
                     </div>
                     <div class="Cart-block Cart-block_price">
-                      <div class="Cart-price">${product.price}$$</div>
+                      <div class="Cart-price">${product.price}$ ₽</div>
                     </div>
                   </div>
                   <div class="Cart-block Cart-block_row">
@@ -96,7 +96,7 @@
                 </div>
                 <div class="Cart-total">
                   <div class="Cart-block Cart-block_total">
-                    <strong class="Cart-title">Итого:<span class="Cart-price">${totalCost}$$</span>
+                    <strong class="Cart-title">Итого:<span class="Cart-price">${totalCost}$ ₽</span>
                     </strong>
                   </div>
                   <div v-if="status === 'created' || status === 'not_paid'" class="Cart-block">

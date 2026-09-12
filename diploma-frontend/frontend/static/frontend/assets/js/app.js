@@ -124,6 +124,91 @@ createApp({
 				location.assign(`/`)
 			})
 		},
+		getCompare() {
+			this.getData('/api/compare')
+				.then((data) => {
+					const compare = {}
+					data.items.forEach((item) => {
+						compare[item.id] = { ...item }
+					})
+					this.compare = compare
+					this.compareCategory = data.category
+				})
+				.catch(() => {
+					console.warn('Ошибка при получении списка сравнения')
+					this.compare = {}
+					this.compareCategory = null
+				})
+		},
+		addToCompare(item, replace = false) {
+			const { id } = item
+			axios
+				.post(
+					'/api/compare',
+					{ id, replace },
+					{ headers: { 'X-CSRFToken': this.getCookie('csrftoken') } }
+				)
+				.then(({ data }) => {
+					const compare = {}
+					data.items.forEach((product) => {
+						compare[product.id] = { ...product }
+					})
+					this.compare = compare
+					this.compareCategory = data.category
+				})
+				.catch((error) => {
+					const data = error?.response?.data
+					if (data?.code === 'different_category') {
+						if (confirm(`${data.detail} Очистить список и сравнить с этим товаром?`)) {
+							this.addToCompare(item, true)
+						}
+						return
+					}
+					if (data?.code === 'limit_reached') {
+						alert(data.detail)
+						return
+					}
+					console.warn('Ошибка при добавлении товара в сравнение')
+				})
+		},
+		removeFromCompare(id) {
+			axios
+				.delete('/api/compare', {
+					data: JSON.stringify({ id }),
+					headers: {
+						'X-CSRFToken': this.getCookie('csrftoken'),
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(({ data }) => {
+					const compare = {}
+					data.items.forEach((product) => {
+						compare[product.id] = { ...product }
+					})
+					this.compare = compare
+					this.compareCategory = data.category
+				})
+				.catch(() => {
+					console.warn('Ошибка при удалении товара из сравнения')
+				})
+		},
+		clearCompare() {
+			axios
+				.delete('/api/compare', {
+					data: JSON.stringify({}),
+					headers: {
+						'X-CSRFToken': this.getCookie('csrftoken'),
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(() => {
+					this.compare = {}
+					this.compareCategory = null
+				})
+				.catch(() => {
+					console.warn('Ошибка при очистке сравнения')
+				})
+		},
 	},
 	computed: {
 		basketCount() {
@@ -138,6 +223,20 @@ createApp({
 						{ count: 0, price: 0 }
 					)) ?? { count: 0, price: 0 }
 			)
+		},
+		compareCount() {
+			return Object.keys(this.compare || {}).length
+		},
+		compareSpecNames() {
+			const names = []
+			Object.values(this.compare || {}).forEach((product) => {
+				;(product.specifications || []).forEach((spec) => {
+					if (!names.includes(spec.name)) {
+						names.push(spec.name)
+					}
+				})
+			})
+			return names
 		},
 	},
 	data() {
@@ -166,6 +265,12 @@ createApp({
 			cart: [],
 			paymentData: {},
 			basket: {},
+			// сравнение товаров (Этап 3) — тот же принцип, что и корзина:
+			// глобальное состояние в общем Vue-приложении, используется
+			// в шапке (счётчик), на карточках каталога/товара (кнопка
+			// добавления) и на странице /compare/ (сам список)
+			compare: {},
+			compareCategory: null,
 			// order: {
 			// 	orderId: null,
 			// 	createdAt: '',
@@ -186,6 +291,7 @@ createApp({
 	mounted() {
 		this.getCategories()
 		this.getBasket()
+		this.getCompare()
 		// this.getLastOrder()
 	},
 }).mount('#site')

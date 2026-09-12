@@ -6,10 +6,10 @@
     <div class="Middle-top">
       <div class="wrap">
         <div class="Middle-header">
-          <h1 class="Middle-title">Catalog Megano
+          <h1 class="Middle-title">Каталог Megano
           </h1>
           <ul class="breadcrumbs Middle-breadcrumbs">
-            <li class="breadcrumbs-item"><a href="/">Home</a>
+            <li class="breadcrumbs-item"><a href="/">Главная</a>
             </li>
             <li class="breadcrumbs-item breadcrumbs-item_current"><span>Каталог</span>
             </li>
@@ -50,7 +50,7 @@
                     <input type="hidden" name="maxPrice" v-model="filter.maxPrice">
                     <!-- Получаем данные по фильтру цены -->
                     
-                    <div class="range-price">Price:&#32;
+                    <div class="range-price">Цена:&#32;
                       <div class="rangePrice">
                       </div>
                     </div>
@@ -142,10 +142,13 @@
               <div class="Card-content">
                 <strong class="Card-title"><a :href="`/product/${card.id}/`">${ card.title }$</a></strong>
                 <div class="Card-description">
-                  <div class="Card-cost"><span class="Card-price">$${ card.price }$</span></div>
+                  <div class="Card-cost"><span class="Card-price">${ card.price }$ ₽</span></div>
                   <div class="Card-hover">
-                    <a class="Card-btn" @click="addToBasket(card)">
-                      <img src="/static/frontend/assets/img/icons/card/cart.svg" alt="cart.svg"/>
+                    <a class="Card-btn" @click="addToBasket(card)" title="Добавить в корзину">
+                      <img src="/static/frontend/assets/img/icons/card/cart.svg?v={% now 'U' %}" alt="cart.svg"/>
+                    </a>
+                    <a class="Card-btn" @click="addToCompare(card)" title="Добавить к сравнению">
+                      <img src="/static/frontend/assets/img/icons/card/change.svg?v={% now 'U' %}" alt="change.svg"/>
                     </a>
                   </div>
                 </div>

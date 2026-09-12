@@ -1,5 +1,6 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -8,11 +9,13 @@ from rest_framework.views import APIView
 from catalog.models import Category, Product, Sale, Tag
 from catalog.serializers import (
     CategorySerializer,
+    CompareItemSerializer,
     ProductFullSerializer,
     ProductShortSerializer,
     ReviewCreateSerializer,
     ReviewSerializer,
     SaleItemSerializer,
+    SubcategorySerializer,
     TagSerializer,
 )
 
@@ -183,3 +186,113 @@ class ProductReviewsView(APIView):
             review.save(update_fields=['user'])
         reviews = product.reviews.all()
         return Response(ReviewSerializer(reviews, many=True).data)
+
+
+class CompareView(APIView):
+    """/api/compare — страница сравнения товаров (Этап 3). ТЗ упоминает
+    иконку перехода на неё в шапке сайта, но готовой вёрстки и JS под нею
+    в пакете `diploma-frontend` нет вообще (проверено чтением всех
+    шаблонов и `.js`-файлов — ни одной ссылки на неё, только мёртвый
+    jQuery-код `.Compare` в `scripts.js`, не подключённый ни к одной
+    странице). Сделано с нуля по решению Олега.
+
+    Хранение — в сессии, без модели в БД, по тому же принципу, что и
+    корзина (Этап 2.5): `request.session['compare']` — список id товаров
+    (не словарь, как в корзине — количество тут не нужно, товар либо
+    в сравнении, либо нет). Список хранит порядок добавления.
+
+    Ограничение — до 4 товаров одновременно и только одной категории
+    (решение Олега 11.09.2026, ТЗ так делать не требует, но так поступает
+    большинство реальных магазинов — сравнивать холодильник с ноутбуком
+    бессмысленно). При попытке добавить товар другой категории список
+    не подменяется молча: ответ — 409 с `code: "different_category"`,
+    страница сравнения показывает пользователю подтверждение и, если он
+    согласен, шлёт тот же запрос повторно с `replace: true`."""
+
+    MAX_ITEMS = 4
+
+    def get(self, request):
+        return Response(self._serialize(request))
+
+    def post(self, request):
+        product_id = request.data.get('id')
+        if product_id is None:
+            return Response({'detail': 'Не указан id товара'}, status=status.HTTP_400_BAD_REQUEST)
+        replace = bool(request.data.get('replace'))
+
+        product = get_object_or_404(Product.objects, pk=product_id)
+        ids = self._get_ids(request)
+
+        if product.id in ids:
+            return Response(self._serialize(request))
+
+        if ids:
+            current_category_id = (
+                Product.objects.filter(pk=ids[0]).values_list('category_id', flat=True).first()
+            )
+            if current_category_id is not None and product.category_id != current_category_id:
+                if not replace:
+                    return Response(
+                        {
+                            'detail': 'Список сравнения содержит товары другой категории.',
+                            'code': 'different_category',
+                        },
+                        status=status.HTTP_409_CONFLICT,
+                    )
+                ids = []
+
+        if len(ids) >= self.MAX_ITEMS:
+            return Response(
+                {
+                    'detail': f'Можно сравнивать не более {self.MAX_ITEMS} товаров одновременно.',
+                    'code': 'limit_reached',
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        ids.append(product.id)
+        self._save_ids(request, ids)
+        return Response(self._serialize(request))
+
+    def delete(self, request):
+        product_id = request.data.get('id')
+        ids = self._get_ids(request)
+        if product_id is None:
+            # без id — очистка всего списка (кнопка "очистить сравнение")
+            ids = []
+        else:
+            ids = [pid for pid in ids if pid != int(product_id)]
+        self._save_ids(request, ids)
+        return Response(self._serialize(request))
+
+    @staticmethod
+    def _get_ids(request):
+        return list(request.session.get('compare', []))
+
+    @staticmethod
+    def _save_ids(request, ids):
+        request.session['compare'] = ids
+        request.session.modified = True
+
+    def _serialize(self, request):
+        ids = self._get_ids(request)
+        products = Product.objects.filter(pk__in=ids).prefetch_related('images', 'specifications')
+        by_id = {product.id: product for product in products}
+        # .filter(pk__in=...) не сохраняет порядок — восстанавливаем порядок
+        # добавления из самого списка id в сессии
+        ordered = [by_id[pid] for pid in ids if pid in by_id]
+
+        # товар мог быть удалён/архивирован после добавления в сравнение —
+        # тихо чистим сессию от таких позиций (тот же приём, что и в корзине)
+        if len(ordered) != len(ids):
+            self._save_ids(request, [product.id for product in ordered])
+
+        category = None
+        if ordered:
+            category = SubcategorySerializer(ordered[0].category, context={'request': request}).data
+
+        return {
+            'items': CompareItemSerializer(ordered, many=True, context={'request': request}).data,
+            'category': category,
+            'maxItems': self.MAX_ITEMS,
+        }
