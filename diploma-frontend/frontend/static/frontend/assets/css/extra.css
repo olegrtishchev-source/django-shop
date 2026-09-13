@@ -5307,3 +5307,10 @@ a.Cart-title {
 .Auth .sub-link:hover {
   border-bottom: 1px solid #0063d1;
 }
+
+.Auth-hint {
+  width: 100%;
+  margin: -3px 0 5px;
+  color: #9b9b9b;
+  font-size: 0.75em;
+}

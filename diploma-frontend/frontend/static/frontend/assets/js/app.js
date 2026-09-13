@@ -37,7 +37,10 @@ createApp({
 					console.warn(
 						`Метод '${url}' вернул статус код ${error.response.status}`
 					)
-					throw new Error()
+					// пробрасываем оригинальную ошибку axios дальше -- в ней
+					// error.response.data.detail с реальной причиной от бэкенда,
+					// а не пустой Error(), как было раньше
+					throw error
 				})
 		},
 		getData(url, payload) {

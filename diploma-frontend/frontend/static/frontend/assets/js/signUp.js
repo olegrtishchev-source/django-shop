@@ -8,8 +8,9 @@ var mix = {
 				.then(({ data, status }) => {
 					location.assign(`/`)
 				})
-				.catch(() => {
-					alert('Ошибка авторизации!')
+				.catch((error) => {
+					const detail = error?.response?.data?.detail
+					alert(Array.isArray(detail) ? detail.join('\n') : (detail || 'Ошибка авторизации!'))
 				})
 		}
 	},

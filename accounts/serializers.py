@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import Profile
+from accounts.validators import validate_phone_format
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -10,6 +11,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     fullName = serializers.CharField(source='full_name', required=False, allow_blank=True)
     email = serializers.EmailField(source='user.email', required=False)
+    phone = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, validators=[validate_phone_format],
+    )
     avatar = serializers.SerializerMethodField()
 
     class Meta:

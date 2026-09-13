@@ -1,8 +1,11 @@
 import re
 
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
+from accounts.validators import validate_phone_format
 from catalog.serializers import ProductImageSerializer
 
 
@@ -81,7 +84,7 @@ class OrderConfirmInputSerializer(serializers.Serializer):
 
     fullName = serializers.CharField(source='full_name', max_length=255)
     email = serializers.EmailField()
-    phone = serializers.CharField(max_length=20)
+    phone = serializers.CharField(max_length=20, validators=[validate_phone_format])
     deliveryType = serializers.ChoiceField(source='delivery_type', choices=['standard', 'express', 'ordinary'])
     paymentType = serializers.ChoiceField(source='payment_type', choices=['online', 'someone'])
     city = serializers.CharField(max_length=255, allow_blank=True, required=False, default='')
@@ -102,13 +105,19 @@ class CheckoutRegisterSerializer(serializers.Serializer):
 
     fullName = serializers.CharField(max_length=255)
     email = serializers.EmailField()
-    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    phone = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, validators=[validate_phone_format],
+    )
     password = serializers.CharField(min_length=1)
     passwordConfirm = serializers.CharField(min_length=1)
 
     def validate(self, attrs):
         if attrs['password'] != attrs['passwordConfirm']:
             raise serializers.ValidationError({'passwordConfirm': 'Пароли не совпадают'})
+        try:
+            validate_password(attrs['password'])
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({'password': exc.messages})
         return attrs
 
     def validate_email(self, value):

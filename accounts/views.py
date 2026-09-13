@@ -2,6 +2,8 @@ import json
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -33,7 +35,10 @@ class SignInView(APIView):
         password = payload.get('password')
         user = authenticate(request, username=username, password=password)
         if user is None:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {'detail': 'Неверный логин или пароль'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         login(request, user)
         return Response(status=status.HTTP_200_OK)
 
@@ -46,8 +51,22 @@ class SignUpView(APIView):
         name = (payload.get('name') or '').strip()
         username = (payload.get('username') or '').strip()
         password = payload.get('password') or ''
-        if not username or not password or User.objects.filter(username=username).exists():
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if not username or not password:
+            return Response(
+                {'detail': 'Логин и пароль обязательны'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {'detail': 'Пользователь с таким логином уже существует'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            validate_password(password)
+        except DjangoValidationError as exc:
+            return Response({'detail': exc.messages}, status=status.HTTP_400_BAD_REQUEST)
+
         user = User.objects.create_user(username=username, password=password)
         Profile.objects.create(user=user, full_name=name)
         login(request, user)
@@ -85,6 +104,10 @@ class ProfilePasswordView(APIView):
         new_password = request.data.get('newPassword')
         if not current_password or not new_password or not request.user.check_password(current_password):
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            validate_password(new_password, user=request.user)
+        except DjangoValidationError as exc:
+            return Response({'detail': exc.messages}, status=status.HTTP_400_BAD_REQUEST)
         request.user.set_password(new_password)
         request.user.save()
         # иначе смена пароля разлогинит текущую сессию
