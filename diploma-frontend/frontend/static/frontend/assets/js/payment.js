@@ -27,6 +27,10 @@ var mix = {
 	data() {
 		return {
 			number1: '',
+			month: '',
+			year: '',
+			code: '',
+			name: '',
 		}
 	}
 }
