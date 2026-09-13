@@ -213,7 +213,10 @@ var form = function(){
             $select.wrap('<div class="form-selectWrap"></div>');
             $('[data-mask]').each(function(){
                 var $this = $(this);
-                $this.mask($this.data('mask'), {placeholder:'x'});
+                // .data() приводит чисто цифровой data-mask ("99", "999")
+                // к числу, а не строке - .mask() плагина падает на числе
+                // ("c.split is not a function"), поэтому явно приводим к строке
+                $this.mask(String($this.data('mask')), {placeholder:'x'});
             });
         }
     };
