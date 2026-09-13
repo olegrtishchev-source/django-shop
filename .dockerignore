@@ -1,0 +1,18 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git/
+.idea/
+.gigaide/
+.env
+db.sqlite3
+media/
+staticfiles/
+diploma-frontend/build/
+diploma-frontend/dist/
+diploma-frontend/diploma_frontend.egg-info/
+Интернет-магазин ТЗ.pdf
+Отчет о работе проекта/
+Ярлыки _ Оплаты/
+Ярлыки _ Соцсети/
