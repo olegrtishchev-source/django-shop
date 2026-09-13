@@ -75,5 +75,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/cart.js' %}"></script>
+<script src="{% static 'frontend/assets/js/cart.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

@@ -105,5 +105,5 @@
 
 {% block mixins %}
 <script>var pk = {{ request.user.pk }}</script>
-<script src="{% static 'frontend/assets/js/profile.js' %}"></script>
+<script src="{% static 'frontend/assets/js/profile.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

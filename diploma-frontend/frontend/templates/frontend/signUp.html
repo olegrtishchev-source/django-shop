@@ -18,5 +18,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/signUp.js' %}"></script>
+<script src="{% static 'frontend/assets/js/signUp.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

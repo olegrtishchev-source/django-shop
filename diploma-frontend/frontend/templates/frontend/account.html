@@ -96,5 +96,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/userAccount.js' %}"></script>
+<script src="{% static 'frontend/assets/js/userAccount.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

@@ -39,5 +39,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/paymentSomeone.js' %}"></script>
+<script src="{% static 'frontend/assets/js/paymentSomeone.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

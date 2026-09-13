@@ -100,5 +100,5 @@
   </div>
 {% endblock %}
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/payment.js' %}"></script>
+<script src="{% static 'frontend/assets/js/payment.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

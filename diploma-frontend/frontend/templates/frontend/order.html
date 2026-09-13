@@ -256,5 +256,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/order-detail.js' %}"></script>
+<script src="{% static 'frontend/assets/js/order-detail.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

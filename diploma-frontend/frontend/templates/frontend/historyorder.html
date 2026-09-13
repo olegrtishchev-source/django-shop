@@ -80,5 +80,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/historyOrder.js' %}"></script>
+<script src="{% static 'frontend/assets/js/historyOrder.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

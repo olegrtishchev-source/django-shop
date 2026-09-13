@@ -181,5 +181,5 @@
 {% endblock %}
 
 {% block mixins %}
-<script src="{% static 'frontend/assets/js/catalog.js' %}"></script>
+<script src="{% static 'frontend/assets/js/catalog.js' %}?v={% now 'U' %}"></script>
 {% endblock %}
