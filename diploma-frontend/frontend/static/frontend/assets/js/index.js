@@ -15,7 +15,6 @@ var mix = {
 					this.popularCards = data
 				})
 				.catch((error) => {
-					console.log('----', error)
 					this.popularCards = []
 					console.warn('Ошибка при получении списка популярных товаров')
 				})

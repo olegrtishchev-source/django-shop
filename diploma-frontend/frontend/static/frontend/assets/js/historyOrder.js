@@ -3,7 +3,6 @@ var mix = {
 		getHistoryOrder() {
 			this.getData("/api/orders")
 				.then(data => {
-					console.log(data)
 					this.orders = data
 				}).catch(() => {
 				this.orders = []

@@ -18,7 +18,6 @@ var mix = {
 					this.totalCost = data.totalCost
 					this.products = data.products
 					this.comment = data.comment || ''
-					console.log(this.products)
 					if (typeof data.paymentError !== 'undefined') {
 						this.paymentError = data.paymentError
 					}
