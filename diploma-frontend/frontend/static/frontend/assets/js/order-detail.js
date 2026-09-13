@@ -51,7 +51,9 @@ var mix = {
 			const doConfirm = () => {
 				this.postData(`/api/order/${this.orderId}`, { ...this })
 					.then(({ data: { orderId } }) => {
-						alert('Заказ подтвержден')
+						// раньше тут был alert('Заказ подтвержден') - лишний блокирующий
+						// попап ровно на переходе к оплате, который пользователь должен
+						// был закрывать вручную, прежде чем увидеть форму реквизитов
 						const target = this.paymentType === 'someone'
 							? `/payment-someone/${orderId}/`
 							: `/payment/${orderId}/`
