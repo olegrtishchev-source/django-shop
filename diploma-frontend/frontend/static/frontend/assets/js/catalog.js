@@ -49,7 +49,7 @@ var mix = {
             if (min !== 0) {
                 this.filter.minPrice = min
             }
-            if (max !== 50000) {
+            if (max !== 500000) {
                 this.filter.maxPrice = max
             }
             this.getData("/api/catalog", {
@@ -98,7 +98,7 @@ var mix = {
             filter: {
                 name: '',
                 minPrice: 0,
-                maxPrice: 50000,
+                maxPrice: 500000,
                 freeDelivery: false,
                 available: true
             }
