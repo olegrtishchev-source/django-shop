@@ -52,7 +52,14 @@ class OrderSerializer(serializers.Serializer):
     email = serializers.EmailField()
     phone = serializers.CharField()
     deliveryType = serializers.CharField(source='delivery_type')
+    # человекочитаемая пара к deliveryType/paymentType - в order.html
+    # (шаг 4, подтверждение) и в истории заказов (historyorder.html,
+    # account.html, oneorder.html) эти поля просто печатаются текстом, а
+    # не биндятся на радиокнопку - сырой код ('standard'/'online') не
+    # годится, нужен человеческий текст, как и у status/statusDisplay
+    deliveryTypeDisplay = serializers.CharField(source='get_delivery_type_display')
     paymentType = serializers.CharField(source='payment_type')
+    paymentTypeDisplay = serializers.CharField(source='get_payment_type_display')
     totalCost = serializers.DecimalField(source='total_cost', max_digits=10, decimal_places=2)
     # status — код статуса ('processing'/'paid'/...), для логики на фронте
     # (опрос страницы ожидания оплаты, условный показ кнопки «Оплатить ещё

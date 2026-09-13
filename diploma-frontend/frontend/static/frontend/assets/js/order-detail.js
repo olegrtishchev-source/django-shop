@@ -9,10 +9,16 @@ var mix = {
 					this.fullName = data.fullName
 					this.phone = data.phone
 					this.email = data.email
-					this.deliveryType = data.deliveryType
+					// order.html шлёт/ждёт радиокнопками "ordinary", а модель на
+					// бэкенде хранит "standard" (validate_deliveryType сам приводит
+					// ordinary -> standard при сохранении) - здесь обратное приведение,
+					// иначе радиокнопка "Обычная доставка" не подсвечивается дефолтом
+					this.deliveryType = data.deliveryType === 'standard' ? 'ordinary' : data.deliveryType
+					this.deliveryTypeDisplay = data.deliveryTypeDisplay
 					this.city = data.city
 					this.address = data.address
 					this.paymentType = data.paymentType
+					this.paymentTypeDisplay = data.paymentTypeDisplay
 					this.status = data.status
 					this.statusDisplay = data.statusDisplay
 					this.totalCost = data.totalCost
@@ -118,9 +124,11 @@ var mix = {
 			phone: null,
 			email: null,
 			deliveryType: null,
+			deliveryTypeDisplay: null,
 			city: null,
 			address: null,
 			paymentType: null,
+			paymentTypeDisplay: null,
 			status: null,
 			statusDisplay: null,
 			totalCost: null,
