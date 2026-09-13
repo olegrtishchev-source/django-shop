@@ -4,6 +4,14 @@ from django.db import models
 from catalog.models import Product
 
 
+class ActiveOrderManager(models.Manager):
+    """Отдаёт только не удалённые заказы - мягкое удаление, как и у
+    Product/Category (ТЗ требует его и для заказов тоже)."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
 class Order(models.Model):
     """Заказ. Контактные данные хранятся снимком на момент оформления —
     чтобы последующее изменение профиля не искажало историю заказов."""
@@ -27,8 +35,13 @@ class Order(models.Model):
     # создаётся анонимным (user=None), id кладём в сессию (см.
     # OrderView._get_or_check_pending в views.py), а как только на Шаге 1
     # происходит регистрация или вход — заказ прикрепляется к пользователю.
+    # on_delete=SET_NULL - реальное удаление пользователя теперь и так не
+    # должно происходить (админка мягко удаляет через is_active, см.
+    # accounts/admin.py), но даже в этом крайнем случае заказ не должен
+    # пропадать вместе с пользователем.
     user = models.ForeignKey(
-        User, verbose_name='покупатель', related_name='orders', null=True, blank=True, on_delete=models.CASCADE
+        User, verbose_name='покупатель', related_name='orders', null=True, blank=True,
+        on_delete=models.SET_NULL,
     )
     created_at = models.DateTimeField('дата создания', auto_now_add=True)
 
@@ -48,6 +61,10 @@ class Order(models.Model):
 
     city = models.CharField('город', max_length=255, blank=True)
     address = models.CharField('адрес', max_length=500, blank=True)
+    is_deleted = models.BooleanField('удалён', default=False)
+
+    objects = ActiveOrderManager()
+    all_objects = models.Manager()
 
     class Meta:
         verbose_name = 'заказ'

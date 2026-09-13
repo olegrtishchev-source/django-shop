@@ -5,9 +5,28 @@ from catalog.models import Category, Product, ProductImage, Review, Sale, ShopSe
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('title', 'parent')
-    list_filter = ('parent',)
+    list_display = ('title', 'parent', 'is_deleted')
+    list_filter = ('parent', 'is_deleted')
     search_fields = ('title',)
+    actions = ['mark_as_deleted', 'restore']
+
+    def get_queryset(self, request):
+        return Category.all_objects.all()
+
+    def delete_model(self, request, obj):
+        obj.is_deleted = True
+        obj.save(update_fields=['is_deleted'])
+
+    def delete_queryset(self, request, queryset):
+        queryset.update(is_deleted=True)
+
+    @admin.action(description='Пометить как удалённые')
+    def mark_as_deleted(self, request, queryset):
+        queryset.update(is_deleted=True)
+
+    @admin.action(description='Восстановить')
+    def restore(self, request, queryset):
+        queryset.update(is_deleted=False)
 
 
 @admin.register(Tag)
@@ -33,7 +52,9 @@ class SaleInline(admin.StackedInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'price', 'count', 'rating', 'is_limited', 'is_banner', 'is_deleted')
+    list_display = (
+        'title', 'category', 'price', 'count', 'rating', 'sort_index', 'is_limited', 'is_banner', 'is_deleted',
+    )
     list_filter = ('category', 'is_deleted', 'is_limited', 'is_banner', 'free_delivery')
     search_fields = ('title', 'description')
     filter_horizontal = ('tags',)

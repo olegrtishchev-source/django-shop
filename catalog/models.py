@@ -3,8 +3,17 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
+class ActiveCategoryManager(models.Manager):
+    """Отдаёт только не удалённые категории -- тот же принцип мягкого
+    удаления, что и у Product (ТЗ требует его и для категорий тоже)."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
 class Category(models.Model):
-    """Категория товара. Поддерживает одну вложенность (подкатегории)."""
+    """Категория товара. Поддерживает одну вложенность (подкатегории).
+    Удаление -- мягкое (is_deleted), как и у Product."""
 
     title = models.CharField('название', max_length=255)
     parent = models.ForeignKey(
@@ -17,6 +26,10 @@ class Category(models.Model):
     )
     image = models.ImageField('изображение', upload_to='categories/', blank=True, null=True)
     image_alt = models.CharField('alt-текст изображения', max_length=255, blank=True)
+    is_deleted = models.BooleanField('удалена', default=False)
+
+    objects = ActiveCategoryManager()
+    all_objects = models.Manager()
 
     class Meta:
         verbose_name = 'категория'
@@ -62,6 +75,13 @@ class Product(models.Model):
     free_delivery = models.BooleanField('бесплатная доставка', default=False)
     tags = models.ManyToManyField(Tag, verbose_name='теги', related_name='products', blank=True)
     rating = models.DecimalField('рейтинг', max_digits=3, decimal_places=2, default=0)
+    sort_index = models.PositiveIntegerField(
+        'индекс сортировки', default=0,
+        help_text=(
+            'Чем меньше значение, тем выше товар в топе на главной странице; '
+            'при равном индексе -- сортировка по количеству покупок'
+        ),
+    )
 
     is_limited = models.BooleanField(
         'товар лимитированной серии', default=False,
