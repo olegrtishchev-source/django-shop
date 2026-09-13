@@ -1,4 +1,5 @@
-from django.db.models import Count
+from django.db.models import Count, Sum, Value
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -123,29 +124,43 @@ class CatalogView(ListAPIView):
 
 
 class PopularProductsView(ListAPIView):
-    """/api/products/popular — вычисляемая выборка: топ-8 товаров по рейтингу
-    (решение согласовано на Этапе 1, ручного флага под это нет)."""
+    """/api/products/popular — топ-8 по «индексу сортировки» (ТЗ, стр. 2):
+    чем меньше sort_index, тем выше товар; при совпадении индекса -
+    по количеству покупок (сумма quantity по всем OrderItem на этот товар).
+    Раньше сортировали по рейтингу - это было временной заменой на Этапе 1,
+    пока не завели отдельное поле sort_index."""
 
     serializer_class = ProductShortSerializer
     pagination_class = None
-    queryset = Product.objects.order_by('-rating', '-id')[:8]
+
+    def get_queryset(self):
+        return (
+            Product.objects
+            .annotate(purchases=Coalesce(Sum('order_items__quantity'), Value(0)))
+            .order_by('sort_index', '-purchases', '-id')[:8]
+        )
 
 
 class LimitedProductsView(ListAPIView):
     """/api/products/limited — товары с флагом is_limited (курируется вручную
-    в админке)."""
+    в админке). ТЗ ограничивает блок «Ограниченный тираж» 16 товарами."""
 
     serializer_class = ProductShortSerializer
     pagination_class = None
-    queryset = Product.objects.filter(is_limited=True)
+    queryset = Product.objects.filter(is_limited=True)[:16]
 
 
 class BannersView(ListAPIView):
-    """/api/banners — товары с флагом is_banner (курируется вручную в админке)."""
+    """/api/banners — товары с флагом is_banner (курируется вручную в
+    админке). ТЗ говорит о «трёх избранных категориях товаров» на главной,
+    но реальная вёрстка/swagger описывают этот блок как три товара-баннера,
+    каждый со ссылкой на свою категорию (banner.category) - трогать
+    вёрстку нельзя, поэтому ограничиваем количество тремя, сохраняя
+    контракт как есть."""
 
     serializer_class = ProductShortSerializer
     pagination_class = None
-    queryset = Product.objects.filter(is_banner=True)
+    queryset = Product.objects.filter(is_banner=True)[:3]
 
 
 class SalesView(ListAPIView):

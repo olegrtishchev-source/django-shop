@@ -148,6 +148,9 @@ class AccountView(APIView):
         })
 
 
+MAX_AVATAR_SIZE = 2 * 1024 * 1024  # 2 МБ - ограничение из ТЗ
+
+
 class ProfileAvatarView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
@@ -157,6 +160,11 @@ class ProfileAvatarView(APIView):
         avatar = request.FILES.get('avatar')
         if not avatar:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        if avatar.size > MAX_AVATAR_SIZE:
+            return Response(
+                {'detail': 'Размер изображения не должен превышать 2 МБ'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         profile.avatar = avatar
         profile.save(update_fields=['avatar'])
         return Response({'src': profile.avatar.url, 'alt': profile.full_name})

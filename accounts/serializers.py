@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from accounts.models import Profile
@@ -19,6 +20,27 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['fullName', 'email', 'phone', 'avatar']
+
+    def validate_email(self, value):
+        # ТЗ требует уникальности email на сайте
+        query = User.objects.filter(email__iexact=value)
+        if self.instance:
+            query = query.exclude(pk=self.instance.user_id)
+        if query.exists():
+            raise serializers.ValidationError('Этот email уже используется другим пользователем')
+        return value
+
+    def validate_phone(self, value):
+        # ТЗ требует уникальности телефона на сайте; пустое значение не
+        # считаем занятым - поле необязательное
+        if not value:
+            return value
+        query = Profile.objects.filter(phone=value)
+        if self.instance:
+            query = query.exclude(pk=self.instance.pk)
+        if query.exists():
+            raise serializers.ValidationError('Этот телефон уже используется другим пользователем')
+        return value
 
     def get_avatar(self, obj):
         # Раньше отдавали голую строку — фронтенд (profile.html) рендерит
